@@ -14,13 +14,17 @@ using namespace std;
 
 class Address {
 	string addr;
-	static int id;
-	const int thisId;
+	static unsigned int id;
+	unsigned int thisId;
 	float longitude, latitude;
+	unsigned int cars;
 public:
-	Address(int i, float lo, float la, string s);
-	Address(float lo, float la, string s);
+	Address(unsigned int i, float lo, float la, string s, unsigned int c);
+	Address(float lo, float la, string s, unsigned int c);
 	virtual ~Address();
+	void resetId();
+	unsigned int getCars();
+	void moveCars(int qt);
 };
 
 #endif /* ADDRESS_H_ */

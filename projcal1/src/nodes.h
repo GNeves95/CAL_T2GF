@@ -124,7 +124,7 @@ void Nodes<T>::clearAdj(){
 template<class T>
 void Nodes<T>::removeAdj(int index){
 	adj.erase(adj.begin() + index);
-	
+
 }
 
 template <class T>
