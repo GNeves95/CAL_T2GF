@@ -5,22 +5,23 @@
  *      Author: up201306485
  */
 
-using namespace std;
+
+#include <string>
+
+//using namespace std;
 
 #ifndef ADDRESS_H_
 #define ADDRESS_H_
 
-#include <string>
-
 class Address {
-	string addr;
 	static unsigned int id;
 	unsigned int thisId;
 	float longitude, latitude;
+	std::string addr;
 	unsigned int cars;
 public:
-	Address(unsigned int i, float lo, float la, string s, unsigned int c);
-	Address(float lo, float la, string s, unsigned int c);
+	Address(unsigned int i, float lo, float la, std::string s, unsigned int c);
+	Address(float lo, float la, std::string s, unsigned int c);
 	virtual ~Address();
 	void resetId();
 	unsigned int getCars();

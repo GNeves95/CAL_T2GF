@@ -5,15 +5,14 @@
  *      Author: Utilizador
  */
 
-using namespace std;
+#include <exception>
 
 #ifndef EXCEPTION_
 #define EXCEPTION_
 
-#include <exception>
 
 
-class NegativeNumberCarsException: public exception{
+class NegativeNumberCarsException: public std::exception{
 	virtual const char* what()  const throw(){
 		return "Negative number of cars in node!\n";
 	}

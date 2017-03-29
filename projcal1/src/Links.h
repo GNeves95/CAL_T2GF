@@ -1,11 +1,12 @@
-#ifndef _LINKS_H_
-#define _LINKS_H_
-using namespace std;
-
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include "nodes.h"
+
+//using namespace std;
+
+#ifndef _LINKS_H_
+#define _LINKS_H_
 
 
 template <class T> class Nodes;
@@ -47,7 +48,8 @@ void Links<T>::setOrigem(Nodes<T> * neworigem){
 }
 
 template <class T>
-Links<T>::Links(Nodes<T> *d, double w) : dest(d), weight(w){
+Links<T>::Links(Nodes<T> *d, double w) : dest(d){
+	weight = w;
 	origem = NULL;
 }
 

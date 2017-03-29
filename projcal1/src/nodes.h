@@ -1,10 +1,11 @@
-#ifndef _NODES_H_
-#define _NODES_H_
-
 #include <string>
 #include <vector>
 #include "Links.h"
-using namespace std;
+
+//using namespace std;
+
+#ifndef _NODES_H_
+#define _NODES_H_
 
 
 template <class T> class Links;
@@ -12,7 +13,7 @@ template <class T> class Links;
 template <class T>
 class Nodes {
 	T info;
-	vector<Links<T>  > adj;
+	std::vector<Links<T>  > adj;
 	Nodes<T> * previous;
 	bool visited, linked, processing;
 	double dist;
@@ -26,7 +27,7 @@ public:
 	bool getProcessing();
 	void setProcessing(bool t);
 
-	vector<Links<T>	> getAdj();
+	std::vector<Links<T>	> getAdj();
 	void clearAdj();
 	bool getVisited();
 	void setVisited(bool t);
@@ -132,13 +133,19 @@ int Nodes<T>::getIndegree() const {
 	return this->indegree;
 }
 template<class T>
-vector<Links<T>> Nodes<T>::getAdj(){
+std::vector<Links<T>> Nodes<T>::getAdj(){
 	return adj;
 }
 
 template <class T>
-Nodes<T>::Nodes(T in) : info(in), visited(false),linked(false),dist(0){
+Nodes<T>::Nodes(T in) : info(in){
+	visited = false;
+	linked = false;
+	dist = 0;
 	path = NULL;
+	previous = NULL;
+	processing = false;
+	indegree = -1;
 }
 
 template <class T>
