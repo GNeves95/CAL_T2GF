@@ -142,8 +142,8 @@ Nodes<T>::Nodes(T in) : info(in){
 	visited = false;
 	linked = false;
 	dist = 0;
-	path = NULL;
-	previous = NULL;
+	path = 0;
+	previous = 0;
 	processing = false;
 	indegree = -1;
 }

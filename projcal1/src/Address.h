@@ -18,14 +18,16 @@ class Address {
 	unsigned int thisId;
 	float longitude, latitude;
 	std::string addr;
-	unsigned int cars;
+	std::vector<Carro*> cars;
+	//unsigned int cars;
 public:
-	Address(unsigned int i, float lo, float la, std::string s, unsigned int c);
-	Address(float lo, float la, std::string s, unsigned int c);
+	Address(unsigned int i, float lo, float la, std::string s);
+	Address(float lo, float la, std::string s);
 	virtual ~Address();
 	void resetId();
-	unsigned int getCars();
-	void moveCars(int qt);
+	std::vector<Carro*> getCars();
+	unsigned int getNumCars();
+	void moveCars(int qt, Address *dest);
 };
 
 #endif /* ADDRESS_H_ */

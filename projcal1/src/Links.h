@@ -50,7 +50,7 @@ void Links<T>::setOrigem(Nodes<T> * neworigem){
 template <class T>
 Links<T>::Links(Nodes<T> *d, double w) : dest(d){
 	weight = w;
-	origem = NULL;
+	origem = 0;
 }
 
 template <class T>
