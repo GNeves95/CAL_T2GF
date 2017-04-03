@@ -5,15 +5,20 @@
  *      Author: up201306485
  */
 
-#include "Address.h"
-#include "Links.h"
 
 #ifndef CARRO_H_
 #define CARRO_H_
 
+
+#include <vector>
+#include "Address.h"
+#include "Links.h"
+
+class Address;
+
 class Carro {
 	Address *dest;
-	std::vector<Links *> path;
+	std::vector<Links<Address> *> path;
 public:
 	Carro();
 	virtual ~Carro();

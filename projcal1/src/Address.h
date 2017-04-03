@@ -6,19 +6,25 @@
  */
 
 
-#include <string>
+
 
 //using namespace std;
 
 #ifndef ADDRESS_H_
 #define ADDRESS_H_
 
+#include <string>
+#include <vector>
+#include "Carro.h"
+
+class Carro;
+
 class Address {
 	static unsigned int id;
 	unsigned int thisId;
 	float longitude, latitude;
 	std::string addr;
-	std::vector<Carro*> cars;
+	std::vector<Carro* > cars;
 	//unsigned int cars;
 public:
 	Address(unsigned int i, float lo, float la, std::string s);
@@ -28,6 +34,7 @@ public:
 	std::vector<Carro*> getCars();
 	unsigned int getNumCars();
 	void moveCars(int qt, Address *dest);
+	void resetCars();
 };
 
 #endif /* ADDRESS_H_ */

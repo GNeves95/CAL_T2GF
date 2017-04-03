@@ -4,10 +4,11 @@
  *  Created on: 27/03/2017
  *      Author: up201306485
  */
-
+#include <vector>
+#include <string>
 #include "Address.h"
 #include "Exception.h"
-#include "Carro.h"
+//#include "Carro.h"
 
 using namespace std;
 
@@ -29,6 +30,7 @@ Address::Address(float lo, float la, string s) {
 	addr = s;
 }
 
+
 Address::~Address() {
 	// TODO Auto-generated destructor stub
 }
@@ -43,7 +45,7 @@ vector<Carro*> Address::getCars() {
 
 void Address::moveCars(int qt, Address *dest) {
 	if((cars.size() - qt) >= 0){
-		for(unsigned int i = 0; i < qt; i++){
+		for(int i = 0; i < qt; i++){
 			cars.at(i)->setDest(dest);
 		}
 	}
@@ -52,4 +54,10 @@ void Address::moveCars(int qt, Address *dest) {
 
 unsigned int Address::getNumCars() {
 	return cars.size();
+}
+
+void Address::resetCars() {
+	for(unsigned int i=0; i < cars.size(); i++){
+		cars.at(i)->setDest(this);
+	}
 }
