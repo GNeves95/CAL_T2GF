@@ -12,13 +12,13 @@
 
 #include <vector>
 #include "Address.h"
-#include "Links.h"
+#include "Graph.h"
 
 class Address;
 
 class Carro {
 	Address *dest;
-	std::vector<Links<Address> *> path;
+	std::vector<Vertex<Address> *> path;
 public:
 	Carro();
 	virtual ~Carro();
