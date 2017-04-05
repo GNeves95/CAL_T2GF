@@ -16,12 +16,12 @@
 using namespace std;
 
 int main() {
-	int id = 0;
+	int id { 0 };
 	string nome = "Caminha";
-	GraphViewer *gv = new GraphViewer(225,425,false);
+	GraphViewer *gv = new GraphViewer { 225, 425, false };
 	gv->createWindow(225,425);
 	gv->addNode(0, 25, 25);
-	stringstream ss;
+	stringstream ss { };
 	ss << id << ": " << nome;
 	gv->setVertexLabel(0, ss.str());
 	gv->setVertexColor(0,"red");

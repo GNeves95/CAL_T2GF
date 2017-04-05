@@ -6,13 +6,14 @@
  */
 #include <vector>
 #include <string>
+#include <sstream>
 #include "Address.h"
 #include "Exception.h"
 //#include "Carro.h"
 
 using namespace std;
 
-unsigned int Address::id = 0;
+unsigned int Address::id { 0 };
 
 Address::Address(unsigned int i, float lo, float la, string s){
 	// TODO Auto-generated constructor stub
@@ -60,4 +61,30 @@ void Address::resetCars() {
 	for(unsigned int i=0; i < cars.size(); i++){
 		//cars.at(i)->setDest(this);
 	}
+}
+
+std::string Address::getMinDist() {
+	return "";
+}
+
+unsigned int Address::getId() {
+	return thisId;
+}
+
+float Address::getLongitude() {
+	return longitude;
+}
+
+float Address::getLatitude() {
+	return latitude;
+}
+
+std::string Address::getAddress() {
+	return addr;
+}
+
+std::string Address::fileFormat() {
+	stringstream ss { } ;
+	ss << thisId << ";" << longitude << ";" << latitude << ";" << addr;
+	return ss.str();
 }

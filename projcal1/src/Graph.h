@@ -71,8 +71,9 @@ class Edge {
 	Vertex<T> * dest;
 	double weight;
 	Vertex<T> * origem;
+	bool closed;
 public:
-	Edge(Vertex<T> *d, double w);
+	Edge(Vertex<T> *d, double w, bool c);
 	double getWeight();
 	Vertex<T> * getDest();
 	Vertex<T> * getOrigem();
@@ -83,7 +84,7 @@ public:
 };
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *d, double w): dest(d){weight = w;}
+Edge<T>::Edge(Vertex<T> *d, double w, bool c): dest(d){weight = w; closed = c; origem = 0;}
 
 template <class T>
 class Graph {
@@ -109,6 +110,8 @@ public:
 	Graph<T> clone();
 };
 
+//Graph
+
 template <class T>
 int Graph<T>::getNumVertex() const {
 	return vertexSet.size();
@@ -124,12 +127,12 @@ void Graph<T>::saveGraph(){
 	for (unsigned int i = 0; i < vertexSet.size(); i++){
 		vertexSet[i]->setVisited(false);
 	}
-	std::ofstream file1;
-	std::ofstream file2;
+	std::ofstream file1 { };
+	std::ofstream file2 { };
 
 	file1.open("nodes.txt");
 	for (unsigned int i = 0; i < vertexSet.size(); i++){
-		file1 << vertexSet[i]->getInfo().getNome() << std::endl;
+		file1 << vertexSet[i]->getInfo().fileFormat() << std::endl;
 	}
 	file1.close();
 
@@ -157,7 +160,8 @@ void Graph<T>::setShortestPaths(int posVertice) {
 
 template<class T>
 bool Graph<T>::deleteLink(){
-	int a, b;
+	int a { };
+	int b { };
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 
@@ -173,7 +177,7 @@ bool Graph<T>::deleteLink(){
 			std::cout << "There are no nodes linked to the selected one!" << std::endl;
 			return false;
 		}
-		unsigned int i;
+		unsigned int i { };
 		for (i = 0; i < vertexSet[a]->getAdj().size(); i++){
 			std::cout << "Number: " << i << " - Node: " << vertexSet[a]->getAdj()[i].getDest()->getInfo() << std::endl;
 		}
@@ -189,8 +193,8 @@ bool Graph<T>::deleteLink(){
 
 template<class T>
 bool Graph<T>::createLink(){
-	int a, b;
-	double weight;
+	int a { }, b { };
+	double weight { };
 
 
 	while (true){
@@ -229,8 +233,8 @@ bool Graph<T>::createLink(){
 	}
 	std::cout << "The Nodes are not related in any way. Please specify the Weight for the new Link: ";
 	std::cin >> weight;
-	Vertex<T> *n1 = new Vertex<T>(vertexSet[b]->getInfo());
-	Edge<T> *l1 = new Edge<T>(n1, weight);
+	Vertex<T> *n1 = new Vertex<T> { vertexSet[b]->getInfo() };
+	Edge<T> *l1 = new Edge<T> { n1, weight };
 	vertexSet[a]->setAdj(*l1);
 
 	return true;
@@ -239,10 +243,10 @@ bool Graph<T>::createLink(){
 template<class T>
 bool Graph<T>::createNode(){
 
-	int a;
-	double weight;
-	float lo, la;
-	std::string info;
+	int a { };
+	double weight { };
+	float lo { }, la { };
+	std::string info { };
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 			std::cout << "Node: " << i << std::endl;
@@ -273,7 +277,7 @@ bool Graph<T>::createNode(){
 
 template<class T>
 Vertex<T> * Graph<T>::findNode(std::string name) {
-	Vertex<Address> *vert;
+	Vertex<Address> *vert { };
 	for (unsigned int i = 0; i < vertexSet.size(); i++) {
 		if (vertexSet[i]->getInfo().getNome() == name) {
 			vert = vertexSet[i];
@@ -286,11 +290,11 @@ Vertex<T> * Graph<T>::findNode(std::string name) {
 template<class T>
 void Graph<T>::createGraph(){
 
-	std::ifstream file;
+	std::ifstream file { };
 
 
 	file.open("nodes.txt");
-	std::string name;
+	std::string name { };
 	while (!file.eof()){
 		file >> name;
 		Address a1(0, 0, 0, name);
@@ -300,7 +304,7 @@ void Graph<T>::createGraph(){
 	file.close();
 
 	file.open("links.txt");
-	std::string sourceName, destName, weightStr;
+	std::string sourceName { }, destName { }, weightStr { };
 	while (!file.eof()){
 		file >> sourceName;
 		file >> destName;
@@ -343,7 +347,7 @@ void Graph<T>::showPaths(int posVertice) {
 template <class T>
 Graph<T> Graph<T>::clone()
 {
-	Graph<T> ret;
+	Graph<T> ret { };
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)
 		ret.addNode(this->vertexSet[i]->getInfo());
 
@@ -370,7 +374,7 @@ std::vector<Vertex<T>* > Graph<T>::calculatePrim(){
 	T sourceHotspot = vertexSet[0]->getInfo();
 	sourceHotspot.setMinDist(0);
 	vertexSet[0]->setInfo(sourceHotspot);
-	std::vector<Vertex<T> *> vertHeap;
+	std::vector<Vertex<T> *> vertHeap { };
 	Push(vertHeap, vertexSet[0]);
 
 
@@ -406,7 +410,7 @@ std::vector<Vertex<T>* > Graph<T>::calculatePrim(){
 
 template <class T>
 bool Graph<T>::deleteNode() {
-	int a;
+	int a { };
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 
@@ -449,7 +453,7 @@ void Graph<T>::dijkstra(Vertex<T> * source){
 	T sourceHotspot = source->getInfo();
 	sourceHotspot.setMinDist(0);
 	source->setInfo(sourceHotspot);
-	std::vector<Vertex<T> *> vertHeap;
+	std::vector<Vertex<T> *> vertHeap { };
 	Push(vertHeap, source);
 
 	while (vertHeap.size() != 0) {
@@ -482,7 +486,7 @@ bool Graph<T>::addNode(const T &in){
 		if ((vertexSet.at(i)->getInfo()) == in)
 			return false;
 	}
-	Vertex<T>  *vertice = new Vertex<T>(in);
+	Vertex<T> *vertice = new Vertex<T> { in };
 	vertexSet.push_back(vertice);
 	return true;
 }
@@ -491,7 +495,7 @@ template <class T>
 bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
 	typename std::vector<Vertex<T>*>::iterator it = vertexSet.begin();
 	typename std::vector<Vertex<T>*>::iterator ite = vertexSet.end();
-	int found = 0;
+	int found { 0 };
 	Vertex<T> *vS = NULL, *vD = NULL;
 	while (found != 2 && it != ite) {
 		if ((*it)->getInfo() == sourc)

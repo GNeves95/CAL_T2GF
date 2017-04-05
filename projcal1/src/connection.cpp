@@ -1,5 +1,7 @@
 #include "connection.h"
 
+using namespace std;
+
 void myerror(string msg) {
   printf("%s\n", msg.c_str());
   exit(-1);
@@ -27,7 +29,7 @@ Connection::Connection(short port) {
   if (connect(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
     myerror("connect() failed");
 #else
-		WSADATA wsaData;
+		WSADATA wsaData { };
     int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != NO_ERROR)
 				printf("Client: Error at WSAStartup().\n");
@@ -35,12 +37,12 @@ Connection::Connection(short port) {
 	// Create a socket.
     sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET) {
-        printf("Client: socket() - Error at socket(): %ld\n", WSAGetLastError());
+        printf("Client: socket() - Error at socket(): %ld\n", (long int) WSAGetLastError());
         WSACleanup();
     }
 
     // Connect to a server.
-    sockaddr_in clientService;
+    sockaddr_in clientService { };
     clientService.sin_family = AF_INET;
     // Just test using the localhost, you can try other IP address
     clientService.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -62,8 +64,8 @@ bool Connection::sendMsg(string msg) {
 }
 
 string Connection::readLine() {
-  string msg;  
-  char ch;
+  string msg { };
+  char ch { };
   while (true) {
     recv(sock, &ch, 1, 0);
     if (ch == '\n')

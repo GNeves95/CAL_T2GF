@@ -15,19 +15,19 @@
 #include "edgetype.h"
 #include "connection.h"
 
-#define BLUE "BLUE"
-#define RED "RED"
-#define PINK "PINK"
-#define BLACK "BLACK"
-#define WHITE "WHITE"
-#define ORANGE "ORANGE"
-#define YELLOW "YELLOW"
-#define GREEN "GREEN"
-#define CYAN "CYAN"
-#define GRAY "GRAY"
-#define DARK_GRAY "DARK_GRAY"
-#define LIGHT_GRAY "LIGHT_GRAY"
-#define MAGENTA "MAGENTA"
+constexpr auto BLUE = "BLUE";
+constexpr auto RED = "RED";
+constexpr auto PINK = "PINK";
+constexpr auto BLACK = "BLACK";
+constexpr auto WHITE = "WHITE";
+constexpr auto ORANGE = "ORANGE";
+constexpr auto YELLOW = "YELLOW";
+constexpr auto GREEN = "GREEN";
+constexpr auto CYAN = "CYAN";
+constexpr auto GRAY = "GRAY";
+constexpr auto DARK_GRAY = "DARK_GRAY";
+constexpr auto LIGHT_GRAY = "LIGHT_GRAY";
+constexpr auto MAGENTA = "MAGENTA";
 
 /**
  * Classe que guarda o grafo e o representa. Todas as suas funções retornam um booleano a indicar
@@ -148,7 +148,7 @@ public:
 	 * @param id Identificador único do nó com o texto a alterar.
 	 * @param label Novo texto do nó.
 	 */
-	bool setVertexLabel(int id, string label);
+	bool setVertexLabel(int id, std::string label);
 
 	/**
 	 * Função que define o texto de uma aresta.
@@ -158,7 +158,7 @@ public:
 	 * @param id Identificador único da aresta com o texto a alterar.
 	 * @param label Novo texto da aresta.
 	 */
-	bool setEdgeLabel(int id, string label);
+	bool setEdgeLabel(int id, std::string label);
 
 	/**
 	 * Função que define a cor de uma aresta.
@@ -168,7 +168,7 @@ public:
 	 * @param id Identificador único da aresta com a cor a alterar.
 	 * @param color Nova cor da aresta, utilizar as constantes definidas no graphviewer.h para conveniência.
 	 */
-	bool setEdgeColor(int id, string color);
+	bool setEdgeColor(int id, std::string color);
 
 	/**
 	 * Função que define se uma aresta é desenhada, ou não, a tracejado.
@@ -188,7 +188,7 @@ public:
 	 * @param id Identificador único do nó com a cor a alterar.
 	 * @param color Nova cor do nó, utilizar as constantes definidas no graphviewer.h para conveniência.
 	 */
-	bool setVertexColor(int id, string color);
+	bool setVertexColor(int id, std::string color);
 
 	/**
 	 * Função que define o tamanho de um nó.
@@ -208,7 +208,7 @@ public:
 	 * @param id Identificador único do nó com o ícone a alterar.
 	 * @param filepath Caminho do ficheiro a utilizar como novo ícone do nó.
 	 */
-	bool setVertexIcon(int id, string filepath);
+	bool setVertexIcon(int id, std::string filepath);
 
 	/**
 	 * Função que define a espessura de uma aresta.
@@ -259,7 +259,7 @@ public:
 	 *
 	 * @param color Nova cor das arestas, utilizar as constantes definidas no graphviewer.h para conveniência.
 	 */
-	bool defineEdgeColor(string color);
+	bool defineEdgeColor(std::string color);
 
 	/**
 	 * Função que define globalmente se as arestas são desenhadas, ou não, a tracejado.
@@ -277,7 +277,7 @@ public:
 	 *
 	 * @param color Nova cor dos nós, utilizar as constantes definidas no graphviewer.h para conveniência.
 	 */
-	bool defineVertexColor(string color);
+	bool defineVertexColor(std::string color);
 
 	/**
 	 * Função que define o tamanho global dos nós.
@@ -296,7 +296,7 @@ public:
 	 *
 	 * @param filepath Caminho do ficheiro a utilizar como novo ícone do nó.
 	 */
-	bool defineVertexIcon(string filepath);
+	bool defineVertexIcon(std::string filepath);
 
 	/**
 	 * Função que altera a imagem de fundo do grafo.
@@ -306,7 +306,7 @@ public:
 	 *
 	 * @param path Caminho para o ficheiro com a imagem.
 	 */
-	bool setBackground(string path);
+	bool setBackground(std::string path);
 
 	/**
 	 * Função que actualiza a visualização do grafo.

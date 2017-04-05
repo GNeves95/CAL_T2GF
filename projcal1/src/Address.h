@@ -38,6 +38,11 @@ public:
 	void resetCars();
 	std::string getMinDist();
 	friend std::ostream & operator << (std::ostream &os, Address p);
+	unsigned int getId();
+	float getLongitude();
+	float getLatitude();
+	std::string getAddress();
+	std::string fileFormat();
 };
 
 #endif /* ADDRESS_H_ */

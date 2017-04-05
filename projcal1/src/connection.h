@@ -17,14 +17,12 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
-
 class Connection {
  public:
   Connection(short port);
 
-  bool sendMsg(string msg);
-  string readLine();
+	bool sendMsg(std::string msg);
+	std::string readLine();
  private: 
 #ifdef linux
   int sock;
