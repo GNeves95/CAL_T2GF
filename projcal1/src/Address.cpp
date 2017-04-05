@@ -39,14 +39,14 @@ void Address::resetId() {
 	id = 0;
 }
 
-vector<Carro*> Address::getCars() {
+/*vector<Carro*> Address::getCars() {
 	return cars;
-}
+}*/
 
 void Address::moveCars(int qt, Address *dest) {
 	if((cars.size() - qt) >= 0){
 		for(int i = 0; i < qt; i++){
-			cars.at(i)->setDest(dest);
+			//cars.at(i)->setDest(dest);
 		}
 	}
 	else throw NegativeNumberCarsException();
@@ -58,6 +58,6 @@ unsigned int Address::getNumCars() {
 
 void Address::resetCars() {
 	for(unsigned int i=0; i < cars.size(); i++){
-		cars.at(i)->setDest(this);
+		//cars.at(i)->setDest(this);
 	}
 }

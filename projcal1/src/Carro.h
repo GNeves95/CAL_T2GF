@@ -16,6 +16,8 @@
 
 class Address;
 
+template <class T> class Vertex;
+
 class Carro {
 	Address *dest;
 	std::vector<Vertex<Address> *> path;
