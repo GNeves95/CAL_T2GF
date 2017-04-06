@@ -15,7 +15,25 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
+#include "graphviewer.h"
 #include "Address.h"
+
+constexpr int height { 400 };
+constexpr int width { 200 };
+
+constexpr float maxLatitude = 42.5;
+constexpr float minLatitude = 36.8;
+
+constexpr float maxLongitude = -6.1;
+constexpr float minLongitude = -10.3;
+
+float lon2coord(float x){
+	return (x-minLongitude)/(maxLongitude-minLongitude);
+}
+
+float lat2coord(float x){
+	return (x-maxLatitude)/(minLatitude-maxLatitude);
+}
 
 template <class T> class Edge;
 template <class T> class Graph;
@@ -58,7 +76,8 @@ public:
 	void setPath(Vertex* value);
 	Vertex<T>* getPath() const;
 
-	void addEdge(Vertex<T> * dest, double wght, bool clsd);
+	void addEdge(Vertex<T> * dest, double wght);
+	void addEdge(Vertex<T> * dest, double wght, bool clsd, unsigned int i);
 	friend class Graph<T>;
 };
 
@@ -69,30 +88,36 @@ Vertex<T>::Vertex(T in): info(in), previous(0){visited = false; dist = 0; path =
 
 template <class T>
 class Edge {
+	static unsigned int id;
+	unsigned int thisId;
 	Vertex<T> * dest;
 	double weight;
 	Vertex<T> * origem;
 	bool closed;
 public:
 	Edge(Vertex<T> *d, double w);
-	Edge(Vertex<T> *d, double w, bool c);
+	Edge(Vertex<T> *d, double w, bool c, unsigned int i);
 	double getWeight();
 	bool getClosed();
-	void openRoad();
-	void closeRoad();
+	void openRoad(GraphViewer *gv);
+	void closeRoad(GraphViewer *gv);
 	Vertex<T> * getDest();
 	Vertex<T> * getOrigem();
 	void setOrigem(Vertex<T> * neworig);
 	void setDest(Vertex<T> * newdest);
 	friend class Graph<T>;
 	friend class Vertex<T>;
+	unsigned int getId();
 };
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *d, double w): dest(d){weight = w; closed = false; origem = 0;}
+unsigned int Edge<T>::id { 0 };
 
 template <class T>
-Edge<T>::Edge(Vertex<T> *d, double w, bool c): dest(d){weight = w; closed = c; origem = 0;}
+Edge<T>::Edge(Vertex<T> *d, double w): dest(d){weight = w; closed = false; origem = 0; thisId = id; id++;}
+
+template <class T>
+Edge<T>::Edge(Vertex<T> *d, double w, bool c, unsigned int i): dest(d){weight = w; closed = c; origem = 0; thisId = i; if(id <= i) id=i;}
 
 template <class T>
 class Graph {
@@ -100,6 +125,7 @@ class Graph {
 public:
 	std::vector<Vertex<T> * > getVertexSet() const;
 	int getNumVertex() const;
+	bool addEdge(const T &sourc, const T &dest, double w, bool c, unsigned int i);
 	bool addEdge(const T &sourc, const T &dest, double w, bool c);
 	bool addNode(const T &in);
 	double getEstruturaLength();
@@ -108,13 +134,13 @@ public:
 	void saveGraph();
 	Vertex<T> * findNode(unsigned int id);
 	Vertex<T> * findNode(std::string name);
-	bool createNode();
-	bool createLink();
-	bool deleteLink();
-	bool deleteNode();
+	void createNode(GraphViewer *gv);
+	void createLink(GraphViewer *gv);
+	void deleteLink(GraphViewer *gv);
+	void deleteNode(GraphViewer *gv);
 	void showPaths(int posVertice);
 	void setShortestPaths(int posVertice);
-	Graph<T> clone();
+	Graph<T>* clone();
 };
 
 //Graph
@@ -138,24 +164,29 @@ void Graph<T>::saveGraph(){
 	std::ofstream file2 { };
 
 	file1.open("nodes.csv");
-	for (unsigned int i = 0; i < vertexSet.size(); i++){
-		file1 << vertexSet[i]->getInfo().fileFormat() << std::endl;
+	if(file1.is_open()){
+		for (unsigned int i = 0; i < vertexSet.size(); i++){
+			file1 << vertexSet[i]->getInfo().fileFormat() << std::endl;
+		}
+		file1.close();
 	}
-	file1.close();
 
 	file2.open("links.csv");
-	for (unsigned int i = 0; i < vertexSet.size(); i++){
-		for (unsigned int j = 0; j < vertexSet[i]->getAdj().size(); j++){
-			if (!vertexSet[i]->getAdj()[j].getDest()->getVisited()){
-				file2 << vertexSet[i]->getInfo().getId() << ";";
-				file2 << vertexSet[i]->getAdj()[j].getDest()->getInfo().getId() << ";";
-				file2 << vertexSet[i]->getAdj()[j].getWeight() << ";";
-				file2 << vertexSet[i]->getAdj()[j].getClosed() << std::endl;
+	if(file2.is_open()){
+		for (unsigned int i = 0; i < vertexSet.size(); i++){
+			for (unsigned int j = 0; j < vertexSet[i]->getAdj().size(); j++){
+				if (!vertexSet[i]->getAdj()[j].getDest()->getVisited()){
+					file2 << vertexSet[i]->getInfo().getId() << ";";
+					file2 << vertexSet[i]->getAdj()[j].getDest()->getInfo().getId() << ";";
+					file2 << vertexSet[i]->getAdj()[j].getWeight() << ";";
+					file2 << vertexSet[i]->getAdj()[j].getClosed() << ";";
+					file2 << vertexSet[i]->getAdj()[j].getId() << std::endl;
+				}
 			}
+			vertexSet[i]->setVisited(true);
 		}
-		vertexSet[i]->setVisited(true);
+		file2.close();
 	}
-	file2.close();
 
 }
 
@@ -167,7 +198,7 @@ void Graph<T>::setShortestPaths(int posVertice) {
 }
 
 template<class T>
-bool Graph<T>::deleteLink(){
+void Graph<T>::deleteLink(GraphViewer *gv){
 	int a { };
 	int b { };
 	while (true){
@@ -183,7 +214,7 @@ bool Graph<T>::deleteLink(){
 	while (true){
 		if (vertexSet[a]->getAdj().size() <= 0){
 			std::cout << "There are no nodes linked to the selected one!" << std::endl;
-			return false;
+			return ;
 		}
 		unsigned int i { };
 		for (i = 0; i < vertexSet[a]->getAdj().size(); i++){
@@ -192,15 +223,15 @@ bool Graph<T>::deleteLink(){
 		std::cout << "Choose Node Number: ";
 		std::cin >> b;
 		if (b >= 0 && b < vertexSet[a]->getAdj().size()){
+			gv->removeEdge(vertexSet[a]->getAdj()[b].getId());
 			vertexSet[a]->removeAdj(b);
-			return true;
+			return ;
 		}
 	}
-	return false;
 }
 
 template<class T>
-bool Graph<T>::createLink(){
+void Graph<T>::createLink(GraphViewer *gv){
 	int a { }, b { };
 	double weight { };
 
@@ -230,57 +261,43 @@ bool Graph<T>::createLink(){
 
 		if (vertexSet[a]->getAdj()[i].getDest()->getInfo() == vertexSet[b]->getInfo()){
 			std::cout << "The Nodes are already related, therefore it is impossible to establish a new Link. " << std::endl;
-			return false;
+			return ;
 		}
 	}
-	for (unsigned int i = 0; i < vertexSet[b]->getAdj().size(); i++){
+	/*for (unsigned int i = 0; i < vertexSet[b]->getAdj().size(); i++){
 		if (vertexSet[b]->getAdj()[i].getDest()->getInfo() == vertexSet[a]->getInfo()){
 			std::cout << "The Nodes are already related, therefore it is impossible to establish a new Link. " << std::endl;
 			return false;
 		}
-	}
+	}*/
 	std::cout << "The Nodes are not related in any way. Please specify the Weight for the new Link: ";
 	std::cin >> weight;
 	Vertex<T> *n1 = new Vertex<T> { vertexSet[b]->getInfo() };
 	Edge<T> *l1 = new Edge<T> { n1, weight };
+	gv->addEdge(l1->getId(),vertexSet[a]->getInfo().getId(), vertexSet[b]->getInfo().getId(),EdgeType::UNDIRECTED);
 	vertexSet[a]->setAdj(*l1);
-
-	return true;
 }
 
 template<class T>
-bool Graph<T>::createNode(){
+void Graph<T>::createNode(GraphViewer *gv){
 
-	int a { };
-	double weight { };
 	float lo { }, la { };
 	std::string info { };
-	while (true){
-		for (unsigned int i = 0; i < vertexSet.size(); i++){
-			std::cout << "Node: " << i << std::endl;
-		}
-		std::cout << "Choose Node Number: ";
-		std::cin >> a;
-		if (a >= 0 &&(unsigned int) a < vertexSet.size())
-			break;
-	}
-	Vertex<T> * v1 = vertexSet[a];
 
 	std::cout << "New Node Name: ";
 	std::cin >> info;
+	//info = "Porto";
 	std::cout << "Node Longitude: ";
 	std::cin >> lo;
+	//lo = -8.607;
 	std::cout << "Node Latitude: ";
 	std::cin >> la;
+	//la = 41.178;
 	Address a1(lo, la, info);
 	addNode(a1);
-	std::cout << "Weight for the new Connection :";
-	std::cin >> weight;
-
-	if (addEdge(vertexSet[a]->getInfo(), a1, weight))
-		if (addEdge(a1, vertexSet[a]->getInfo(), weight))
-			return true;
-	return false;
+	gv->addNode(a1.getId(),lon2coord(lo)*width,lat2coord(la)*height);
+	gv->setVertexLabel(a1.getId(), info);
+	gv->setVertexColor(a1.getId(),CYAN);
 }
 
 template<class T>
@@ -355,7 +372,7 @@ void Graph<T>::createGraph(){
 	}
 
 	file.open("links.csv");
-	int sourceId { }, destId { };
+	int sourceId { }, destId { }, vertId { };
 	double weight { };
 	bool closed { };
 	if(file.is_open()){
@@ -379,6 +396,9 @@ void Graph<T>::createGraph(){
 					case 3:
 						closed = std::atoi(aux.c_str());;
 						break;
+					case 4:
+						vertId = std::atoi(aux.c_str());;
+						break;
 					default:
 						break;
 					}
@@ -390,8 +410,8 @@ void Graph<T>::createGraph(){
 
 			Address asource = findNode(sourceId)->getInfo();
 			Address adest = findNode(destId)->getInfo();
-			addEdge(asource, adest, weight, closed);  //Adiciona um para um  //Bidirecional. [1]->[2] [1]<-[2]
-			addEdge(adest, asource, weight, closed);
+			addEdge(asource, adest, weight, closed, vertId);  //Adiciona um para um  //Bidirecional. [1]->[2] [1]<-[2]
+			//addEdge(adest, asource, weight, closed);
 		}
 
 		file.close();
@@ -423,28 +443,27 @@ void Graph<T>::showPaths(int posVertice) {
 }
 
 template <class T>
-Graph<T> Graph<T>::clone()
+Graph<T>* Graph<T>::clone()
 {
-	Graph<T> ret { };
+	Graph<T>* ret { };
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)
-		ret.addNode(this->vertexSet[i]->getInfo());
+		ret->addNode(this->vertexSet[i]->getInfo());
 
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)
 	{
 		std::vector<Edge<T> > edges = this->vertexSet[i]->getAdj();
 		for (unsigned int a = 0; a < edges.size(); a++)
-			ret.addEdge(this->vertexSet[i]->getInfo(), edges[a].getDest()->getInfo(), edges[a].getWeight(), edges[a].getClosed());
+			ret->addEdge(this->vertexSet[i]->getInfo(), edges[a].getDest()->getInfo(), edges[a].getWeight(), edges[a].getClosed());
 	}
 
 	return ret;
 }
 
 template <class T>
-bool Graph<T>::deleteNode() {
+void Graph<T>::deleteNode(GraphViewer *gv) {
 	int a { };
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
-
 			std::cout << "Number: " << i << " - Node: " << vertexSet[i]->getInfo() << std::endl;
 		}
 		std::cout << "Choose Node Number: ";
@@ -452,6 +471,9 @@ bool Graph<T>::deleteNode() {
 		if (a >= 0 && a < vertexSet.size())
 			break;
 	}
+
+	//gv->removeEdge();
+
 	vertexSet[a]->clearAdj();
 
 	for (unsigned int i = 0; i < vertexSet.size(); i++){
@@ -464,13 +486,13 @@ bool Graph<T>::deleteNode() {
 		}
 	}
 	vertexSet.erase(vertexSet.begin() + a);
-	return true;
+	//return true;
 }
 
 template <class T>
 void Graph<T>::dijkstra(Vertex<T> * source){
 
-	double maxdist = 999999;
+	/*double maxdist = 999999;
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++) {
 		this->vertexSet[i]->setPath(NULL);
 		for (unsigned int j = 0; j < vertexSet[i]->getAdj().size(); j++){
@@ -507,18 +529,41 @@ void Graph<T>::dijkstra(Vertex<T> * source){
 
 			}
 		}
-	}
+	}*/
 }
 
 template <class T>
 bool Graph<T>::addNode(const T &in){
+	typename std::vector<Vertex<T>*>::iterator it= vertexSet.begin();
+	typename std::vector<Vertex<T>*>::iterator ite= vertexSet.end();
+	for (; it!=ite; it++)
+		if ((*it)->info == in) return false;
+	Vertex<T> *v1 = new Vertex<T> { in };
+	vertexSet.push_back(v1);
+	return true;
+}
 
-	for (unsigned int i = 0; i < vertexSet.size(); i++){
-		if ((vertexSet.at(i)->getInfo()) == in)
-			return false;
+template <class T>
+bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, bool c, unsigned int i) {
+	typename std::vector<Vertex<T>*>::iterator it = vertexSet.begin();
+	typename std::vector<Vertex<T>*>::iterator ite = vertexSet.end();
+	int found { 0 };
+	Vertex<T> *vS = NULL, *vD = NULL;
+	while (found != 2 && it != ite) {
+		if ((*it)->getInfo() == sourc)
+		{
+			vS = *it; found++;
+		}
+		if ((*it)->getInfo() == dest)
+		{
+			vD = *it; found++;
+		}
+		it++;
 	}
-	Vertex<T> *vertice = new Vertex<T> { in };
-	vertexSet.push_back(vertice);
+	if (found != 2)
+		return false;
+	vS->addEdge(vD, w, c, i);
+
 	return true;
 }
 
@@ -541,7 +586,7 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, bool c) {
 	}
 	if (found != 2)
 		return false;
-	vS->addEdge(vD, w, c);
+	vS->addEdge(vD, w);
 
 	return true;
 }
@@ -572,12 +617,14 @@ inline bool Edge<T>::getClosed() {
 }
 
 template<class T>
-inline void Edge<T>::openRoad() {
+inline void Edge<T>::openRoad(GraphViewer *gv) {
+	gv->setEdgeColor(thisId,BLACK);
 	closed = false;
 }
 
 template<class T>
-inline void Edge<T>::closeRoad() {
+inline void Edge<T>::closeRoad(GraphViewer *gv) {
+	gv->setEdgeColor(thisId,RED);
 	closed = true;
 }
 
@@ -615,8 +662,15 @@ void Vertex<T>::setProcessing(bool t){
 
 
 template <class T>
-void Vertex<T>::addEdge(Vertex<T> *dest, double wght, bool clsd) {
-	Edge<T> edgeD(dest,wght, clsd);
+void Vertex<T>::addEdge(Vertex<T> *dest, double wght, bool clsd, unsigned int i) {
+	Edge<T> edgeD(dest,wght, clsd, i);
+	edgeD.setOrigem(this);
+	adj.push_back(edgeD);
+}
+
+template <class T>
+void Vertex<T>::addEdge(Vertex<T> *dest, double wght) {
+	Edge<T> edgeD(dest,wght);
 	edgeD.setOrigem(this);
 	adj.push_back(edgeD);
 }
@@ -714,6 +768,11 @@ void Vertex<T>::setLinked(bool t){
 template<class T>
 Vertex<T> * Vertex<T>::getPrevious(){
 	return this->previous;
+}
+
+template<class T>
+inline unsigned int Edge<T>::getId() {
+	return thisId;
 }
 
 #endif /* GRAPH_H_ */

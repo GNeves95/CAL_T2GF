@@ -22,6 +22,7 @@ Address::Address(unsigned int i, float lo, float la, string s){
 	longitude = lo;
 	latitude = la;
 	addr = s;
+	minDist = 0;
 }
 
 Address::Address(float lo, float la, string s) {
@@ -29,6 +30,7 @@ Address::Address(float lo, float la, string s) {
 	longitude = lo;
 	latitude = la;
 	addr = s;
+	minDist = 0;
 }
 
 
@@ -61,10 +63,6 @@ void Address::resetCars() {
 	for(unsigned int i=0; i < cars.size(); i++){
 		//cars.at(i)->setDest(this);
 	}
-}
-
-std::string Address::getMinDist() {
-	return "";
 }
 
 unsigned int Address::getId() {
@@ -104,4 +102,17 @@ std::string Address::fileFormat() {
 	stringstream ss { } ;
 	ss << thisId << ";" << longitude << ";" << latitude << ";" << addr;
 	return ss.str();
+}
+
+double Address::getMinDist(){
+	return this->minDist;
+}
+
+void Address::setMinDist(double minDist){
+	this->minDist = minDist;
+}
+
+ostream & operator << (ostream &os, Address n){
+	os << n.getNome();
+	return os;
 }

@@ -16,10 +16,10 @@
 #include "graphviewer.h"
 using namespace std;
 
-constexpr int height { 400 };
-constexpr int width { 200 };
+//constexpr int height { 400 };
+//constexpr int width { 200 };
 
-constexpr float maxLatitude = 42.5;
+/*constexpr float maxLatitude = 42.5;
 constexpr float minLatitude = 36.8;
 
 constexpr float maxLongitude = -6.1;
@@ -32,19 +32,43 @@ float lon2coord(float x){
 float lat2coord(float x){
 	return (x-maxLongitude)/(minLatitude-maxLongitude);
 }
+ */
+
+unsigned int numberPicker(Graph<Address> *graf){
+
+	unsigned int a { };
+	while (true){
+		for (unsigned int i = 1; i <= graf->getVertexSet().size(); i++){
+			cout << "Index: " << i << " " << graf->getVertexSet()[i-1]->getInfo().getNome() << endl;
+		}
+		cin >> a;
+		if (a > 0 && a <= graf->getVertexSet().size())
+			return a - 1;
+	}
+	return -1;
+}
+
+void printGraph(GraphViewer *gv, Graph<Address> *g){
+	gv->rearrange();
+}
 
 int main() {
 
-	Graph<Address> g { };
+	Graph<Address> *g { };
+	Graph<Address> *g1 { };
+	Graph<Address> *g2 { };
 
-	g.createGraph();
+	g->createGraph();
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
+	unsigned int posVertice { };
 
 	GraphViewer *gv = new GraphViewer { width, height, false };
 	gv->createWindow(width,height);
 
 	do{
+		char a { };
+		printGraph(gv,g);
 		cout << "\t\tMenu: " << endl;
 		cout << "\n\t1.Create Node" << endl;
 		cout << "\t2.Create Link" << endl;
@@ -53,26 +77,51 @@ int main() {
 		cout << "\t5.Load Graph" << endl;
 		cout << "\t6.Save Graph" << endl;
 		cout << "\t7.Use Dijkstra" << endl;
-		running = false;
+		//running = false;
+		cin >> a;
+		system("CLS");
+
+		switch (a){
+		case '1':
+			g->createNode(gv);
+			break;
+		case '2':
+			g->createLink(gv);
+			break;
+		case '3':
+			g->deleteNode(gv);
+			break;
+		case '4':
+			g->deleteLink(gv);
+			break;
+		case '5':
+			g->createGraph();
+			break;
+		case '6':
+			g->saveGraph();
+			break;
+		case '7':
+			posVertice = numberPicker(g);
+			g2 = g1->clone();
+			g2->setShortestPaths(posVertice);
+			g2->showPaths(posVertice);
+			break;
+		case '8':
+			//primresult = g.calculatePrim();
+			break;
+		case '9':
+			posVertice = numberPicker(g);
+			//g.leastUsageOfCable(primresult, posVertice);
+			break;
+		case 'q':
+			running = false;
+			break;
+		default:
+			break;
+		}
 	} while(running);
 
-	gv->addNode(0, 25, 25);
-	stringstream ss { };
-	ss << "" << ": " << "";
-	gv->setVertexLabel(0, ss.str());
-	gv->setVertexColor(0,"red");
-	getchar();
 
-	gv->addNode(1, 125, 325);
-	ss.str(string());
-	ss << "1: Vila Real de Santo António";
-	gv->setVertexLabel(1,ss.str());
-	gv->setVertexColor(1, "BLACK");
-	gv->addEdge(0,0,1,EdgeType::DIRECTED);
-	gv->setEdgeColor(0,"red");
-	gv->setEdgeLabel(0,"A1");
-	gv->rearrange();
-	getchar();
 
 	gv->closeWindow();
 	return 0;

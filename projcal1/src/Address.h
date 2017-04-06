@@ -23,6 +23,7 @@ class Address {
 	static unsigned int id;
 	unsigned int thisId;
 	float longitude, latitude;
+	double minDist;
 	std::string addr;
 	std::vector<int> cars;
 	//std::vector<Carro* > cars;
@@ -36,15 +37,17 @@ public:
 	unsigned int getNumCars();
 	void moveCars(int qt, Address *dest);
 	void resetCars();
-	std::string getMinDist();
+	//std::string getMinDist();
 	friend std::ostream & operator << (std::ostream &os, Address p);
 	bool operator == (const Address &a2) const;
 	unsigned int getId();
 	float getLongitude();
 	float getLatitude();
+	double getMinDist();
 	void setLongitude(float lo);
 	void setLatitude(float la);
 	void setNome(std::string n);
+	void setMinDist(double minDist);
 	std::string getNome();
 	std::string fileFormat();
 };
