@@ -319,79 +319,83 @@ void Graph<T>::createGraph(){
 	std::string name { };
 	float longitude { };
 	float latitude { };
-	while (!file.eof()){
-		file >> line;
-		std::string aux { };
-		unsigned int ctrl { 0 };
-		for(unsigned int i=0; i < line.size(); i++){
-			if(line.at(i) == ';'){
-				switch(ctrl){
-				case 0:
-					id = std::atoi(aux.c_str());
-					break;
-				case 1:
-					longitude = std::atof(aux.c_str());
-					break;
-				case 2:
-					longitude = std::atof(aux.c_str());
-					break;
-				case 3:
-					name = aux;
-					break;
-				default:
-					break;
+	if(file.is_open()){
+		while(getline(file,line)){
+			//file >> line;
+			std::string aux { };
+			unsigned int ctrl { 0 };
+			for(unsigned int i=0; i < line.size(); i++){
+				if(line.at(i) == ';'){
+					switch(ctrl){
+					case 0:
+						id = std::atoi(aux.c_str());
+						break;
+					case 1:
+						longitude = std::atof(aux.c_str());
+						break;
+					case 2:
+						longitude = std::atof(aux.c_str());
+						break;
+					case 3:
+						name = aux;
+						break;
+					default:
+						break;
+					}
+					ctrl++;
+					aux = std::string();
 				}
-				ctrl++;
-				aux = std::string();
+				else aux += line.at(i);
 			}
-			else aux += line.at(i);
+			Address a1(id, longitude, latitude, name);
+			addNode(a1);
 		}
-		Address a1(id, longitude, latitude, name);
-		addNode(a1);
-	}
 
-	file.close();
+		file.close();
+	}
 
 	file.open("links.csv");
 	int sourceId { }, destId { };
 	double weight { };
 	bool closed { };
-	while (!file.eof()){
-		file >> line;
-		std::string aux { };
-		unsigned int ctrl { 0 };
+	if(file.is_open()){
+		while(getline(file,line)){
+			//file >> line;
+			std::string aux { };
+			unsigned int ctrl { 0 };
 
-		for(unsigned int i=0; i < line.size(); i++){
-			if(line.at(i) == ';'){
-				switch(ctrl){
-				case 0:
-					sourceId = std::atoi(aux.c_str());
-					break;
-				case 1:
-					destId = std::atoi(aux.c_str());
-					break;
-				case 2:
-					weight = std::strtod(aux.c_str(), 0);
-					break;
-				case 3:
-					closed = std::atoi(aux.c_str());;
-					break;
-				default:
-					break;
+			for(unsigned int i=0; i < line.size(); i++){
+				if(line.at(i) == ';'){
+					switch(ctrl){
+					case 0:
+						sourceId = std::atoi(aux.c_str());
+						break;
+					case 1:
+						destId = std::atoi(aux.c_str());
+						break;
+					case 2:
+						weight = std::strtod(aux.c_str(), 0);
+						break;
+					case 3:
+						closed = std::atoi(aux.c_str());;
+						break;
+					default:
+						break;
+					}
+					ctrl++;
+					aux = std::string();
 				}
-				ctrl++;
-				aux = std::string();
+				else aux += line.at(i);
 			}
-			else aux += line.at(i);
+
+			Address asource = findNode(sourceId)->getInfo();
+			Address adest = findNode(destId)->getInfo();
+			addEdge(asource, adest, weight, closed);  //Adiciona um para um  //Bidirecional. [1]->[2] [1]<-[2]
+			addEdge(adest, asource, weight, closed);
 		}
 
-		Address asource = findNode(sourceId)->getInfo();
-		Address adest = findNode(destId)->getInfo();
-		addEdge(asource, adest, weight, closed);  //Adiciona um para um  //Bidirecional. [1]->[2] [1]<-[2]
-		addEdge(adest, asource, weight, closed);
+		file.close();
 	}
-
-	file.close();
 }
 
 template <class T>

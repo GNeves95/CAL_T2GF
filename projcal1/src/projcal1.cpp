@@ -37,7 +37,7 @@ int main() {
 
 	Graph<Address> g { };
 
-	//g.createGraph();
+	g.createGraph();
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
 
