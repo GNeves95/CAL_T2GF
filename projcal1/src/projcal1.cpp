@@ -11,18 +11,54 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include "Address.h"
 #include "Graph.h"
 #include "graphviewer.h"
 using namespace std;
 
+constexpr int height { 400 };
+constexpr int width { 200 };
+
+constexpr float maxLatitude = 42.5;
+constexpr float minLatitude = 36.8;
+
+constexpr float maxLongitude = -6.1;
+constexpr float minLongitude = -10.3;
+
+float lon2coord(float x){
+	return (x-minLongitude)/(maxLatitude-minLongitude);
+}
+
+float lat2coord(float x){
+	return (x-maxLongitude)/(minLatitude-maxLongitude);
+}
+
 int main() {
-	int id { 0 };
-	string nome = "Caminha";
-	GraphViewer *gv = new GraphViewer { 225, 425, false };
-	gv->createWindow(225,425);
+
+	Graph<Address> g { };
+
+	//g.createGraph();
+	vector<Edge<Address> *> primresult { };
+	bool running { true };
+
+	GraphViewer *gv = new GraphViewer { width, height, false };
+	gv->createWindow(width,height);
+
+	do{
+		cout << "\t\tMenu: " << endl;
+		cout << "\n\t1.Create Node" << endl;
+		cout << "\t2.Create Link" << endl;
+		cout << "\t3.Delete Node" << endl;
+		cout << "\t4.Delete Link" << endl;
+		cout << "\t5.Load Graph" << endl;
+		cout << "\t6.Save Graph" << endl;
+		cout << "\t7.Use Dijkstra" << endl;
+		running = false;
+	} while(running);
+
 	gv->addNode(0, 25, 25);
 	stringstream ss { };
-	ss << id << ": " << nome;
+	ss << "" << ": " << "";
 	gv->setVertexLabel(0, ss.str());
 	gv->setVertexColor(0,"red");
 	getchar();

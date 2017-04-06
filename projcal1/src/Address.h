@@ -38,10 +38,14 @@ public:
 	void resetCars();
 	std::string getMinDist();
 	friend std::ostream & operator << (std::ostream &os, Address p);
+	bool operator == (const Address &a2) const;
 	unsigned int getId();
 	float getLongitude();
 	float getLatitude();
-	std::string getAddress();
+	void setLongitude(float lo);
+	void setLatitude(float la);
+	void setNome(std::string n);
+	std::string getNome();
 	std::string fileFormat();
 };
 

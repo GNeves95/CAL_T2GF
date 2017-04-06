@@ -79,8 +79,25 @@ float Address::getLatitude() {
 	return latitude;
 }
 
-std::string Address::getAddress() {
+std::string Address::getNome() {
 	return addr;
+}
+
+void Address::setLongitude(float lo) {
+	longitude = lo;
+}
+
+void Address::setLatitude(float la) {
+	latitude = la;
+}
+
+void Address::setNome(std::string n) {
+	addr = n;
+}
+
+bool Address::operator ==(const Address& a2) const {
+	if(this->addr == a2.addr && this->latitude == a2.latitude && this->longitude == a2.longitude) return true;
+	return false;
 }
 
 std::string Address::fileFormat() {
