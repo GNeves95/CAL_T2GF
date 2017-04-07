@@ -61,7 +61,7 @@ int main() {
 	g->createGraph();
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
-	unsigned int posVertice { };
+	unsigned int posVertice { }, posDest { };
 
 	GraphViewer *gv = new GraphViewer { width, height, false };
 	gv->createWindow(width,height);
@@ -74,7 +74,7 @@ int main() {
 		cout << "\t2.Create Link" << endl;
 		cout << "\t3.Delete Node" << endl;
 		cout << "\t4.Delete Link" << endl;
-		cout << "\t5.Load Graph" << endl;
+		cout << "\t5.Close Road" << endl; //<--
 		cout << "\t6.Save Graph" << endl;
 		cout << "\t7.Use Dijkstra" << endl;
 		//running = false;
@@ -101,10 +101,14 @@ int main() {
 			g->saveGraph();
 			break;
 		case '7':
+			//posVertice = numberPicker(g);
+			cout << "Choose source: ";
 			posVertice = numberPicker(g);
+			cout << "Choose destiny: ";
+			posDest = numberPicker(g);
 			g2 = g1->clone();
 			g2->setShortestPaths(posVertice);
-			g2->showPaths(posVertice);
+			g2->showPaths(posVertice, posDest, gv);
 			break;
 		case '8':
 			//primresult = g.calculatePrim();

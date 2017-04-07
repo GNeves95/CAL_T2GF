@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include "graphviewer.h"
 #include "Address.h"
+#include "MinHeap.h"
 
 constexpr int height { 400 };
 constexpr int width { 200 };
@@ -78,6 +79,8 @@ public:
 
 	void addEdge(Vertex<T> * dest, double wght);
 	void addEdge(Vertex<T> * dest, double wght, bool clsd, unsigned int i);
+
+	bool operator > (const Vertex<T> &v2) const;
 	friend class Graph<T>;
 };
 
@@ -138,7 +141,7 @@ public:
 	void createEdge(GraphViewer *gv);
 	void deleteEdge(GraphViewer *gv);
 	void deleteVertex(GraphViewer *gv);
-	void showPaths(int posVertice);
+	void showPaths(int posVertice, int posDest, GraphViewer *gv);
 	void setShortestPaths(int posVertice);
 	Graph<T>* clone();
 };
@@ -426,20 +429,27 @@ struct vertex_greater_than {
 };
 
 template<class T>
-void Graph<T>::showPaths(int posVertice) {
-	for (int i = 0; i < vertexSet.size(); i++) {
-		Vertex<Address> * vert = vertexSet[i];
-		std::cout << "Caminho mais curto ate " << vert->getInfo() << " dist("
-				<< vert->getInfo().getMinDist() << ")";
-		while (vert != vertexSet.at(posVertice)) {
-			//std::cout << "vert name: " << vert->getInfo() << std::endl;
-			std::cout << " <-- " << vert->getPrevious()->getInfo() << " dist("
-					<< vert->getPrevious()->getInfo().getMinDist() << ")";
+void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
+	Vertex<Address> * vert = vertexSet[posDest];
+	std::cout << "Caminho mais curto ate " << vert->getInfo() << " dist("
+			<< vert->getInfo().getMinDist() << ")";
+	while (vert != vertexSet.at(posVertice)) {
+		Vertex<Address> * aux = vert->getPrevious();
+		//std::cout << "vert name: " << vert->getInfo() << std::endl;
+		std::cout << " <-- " << vert->getPrevious()->getInfo() << " dist("
+				<< vert->getPrevious()->getInfo().getMinDist() << ")";
 
-			vert = vert->getPrevious();
+		for(unsigned int i=0; i < aux->getAdj().size(); i++){
+			if(aux->getAdj()[i].dest == vert){
+				gv->setEdgeColor(aux->getAdj()[i].getId(),GREEN);
+				break;
+			}
 		}
-		std::cout << std::endl;
+
+		vert = vert->getPrevious();
 	}
+	std::cout << std::endl;
+
 }
 
 template <class T>
@@ -492,7 +502,7 @@ void Graph<T>::deleteVertex(GraphViewer *gv) {
 template <class T>
 void Graph<T>::dijkstra(Vertex<T> * source){
 
-	/*double maxdist = 999999;
+	double maxdist = 999999;
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++) {
 		this->vertexSet[i]->setPath(NULL);
 		for (unsigned int j = 0; j < vertexSet[i]->getAdj().size(); j++){
@@ -529,7 +539,7 @@ void Graph<T>::dijkstra(Vertex<T> * source){
 
 			}
 		}
-	}*/
+	}
 }
 
 template <class T>
@@ -776,6 +786,11 @@ Vertex<T> * Vertex<T>::getPrevious(){
 template<class T>
 inline unsigned int Edge<T>::getId() {
 	return thisId;
+}
+
+template<class T>
+inline bool Vertex<T>::operator >(const Vertex<T>& v2) const {
+	return info.getMinDist() > v2->getInfo().getMinDist();;
 }
 
 #endif /* GRAPH_H_ */
