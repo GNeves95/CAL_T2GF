@@ -127,17 +127,17 @@ public:
 	int getNumVertex() const;
 	bool addEdge(const T &sourc, const T &dest, double w, bool c, unsigned int i);
 	bool addEdge(const T &sourc, const T &dest, double w, bool c);
-	bool addNode(const T &in);
+	bool addVertex(const T &in);
 	double getEstruturaLength();
 	void dijkstra(Vertex<T> * source);
 	void createGraph();
 	void saveGraph();
-	Vertex<T> * findNode(unsigned int id);
-	Vertex<T> * findNode(std::string name);
-	void createNode(GraphViewer *gv);
-	void createLink(GraphViewer *gv);
-	void deleteLink(GraphViewer *gv);
-	void deleteNode(GraphViewer *gv);
+	Vertex<T> * findVertex(unsigned int id);
+	Vertex<T> * findVertex(std::string name);
+	void createVertex(GraphViewer *gv);
+	void createEdge(GraphViewer *gv);
+	void deleteEdge(GraphViewer *gv);
+	void deleteVertex(GraphViewer *gv);
 	void showPaths(int posVertice);
 	void setShortestPaths(int posVertice);
 	Graph<T>* clone();
@@ -163,7 +163,7 @@ void Graph<T>::saveGraph(){
 	std::ofstream file1 { };
 	std::ofstream file2 { };
 
-	file1.open("nodes.csv");
+	file1.open("Vertexs.csv");
 	if(file1.is_open()){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 			file1 << vertexSet[i]->getInfo().fileFormat() << std::endl;
@@ -198,29 +198,29 @@ void Graph<T>::setShortestPaths(int posVertice) {
 }
 
 template<class T>
-void Graph<T>::deleteLink(GraphViewer *gv){
+void Graph<T>::deleteEdge(GraphViewer *gv){
 	int a { };
 	int b { };
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 
-			std::cout << "Number: " << i << " - Node: " << vertexSet[i]->getInfo() << std::endl;
+			std::cout << "Number: " << i << " - Vertex: " << vertexSet[i]->getInfo() << std::endl;
 		}
-		std::cout << "Choose Node Number: ";
+		std::cout << "Choose Vertex Number: ";
 		std::cin >> a;
 		if (a >= 0 && a < vertexSet.size())
 			break;
 	}
 	while (true){
 		if (vertexSet[a]->getAdj().size() <= 0){
-			std::cout << "There are no nodes linked to the selected one!" << std::endl;
+			std::cout << "There are no Vertexs linked to the selected one!" << std::endl;
 			return ;
 		}
 		unsigned int i { };
 		for (i = 0; i < vertexSet[a]->getAdj().size(); i++){
-			std::cout << "Number: " << i << " - Node: " << vertexSet[a]->getAdj()[i].getDest()->getInfo() << std::endl;
+			std::cout << "Number: " << i << " - Vertex: " << vertexSet[a]->getAdj()[i].getDest()->getInfo() << std::endl;
 		}
-		std::cout << "Choose Node Number: ";
+		std::cout << "Choose Vertex Number: ";
 		std::cin >> b;
 		if (b >= 0 && b < vertexSet[a]->getAdj().size()){
 			gv->removeEdge(vertexSet[a]->getAdj()[b].getId());
@@ -231,7 +231,7 @@ void Graph<T>::deleteLink(GraphViewer *gv){
 }
 
 template<class T>
-void Graph<T>::createLink(GraphViewer *gv){
+void Graph<T>::createEdge(GraphViewer *gv){
 	int a { }, b { };
 	double weight { };
 
@@ -239,9 +239,9 @@ void Graph<T>::createLink(GraphViewer *gv){
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 
-			std::cout << "Number: " << i << " - Node: " << vertexSet[i]->getInfo() << std::endl;
+			std::cout << "Number: " << i << " - Vertex: " << vertexSet[i]->getInfo() << std::endl;
 		}
-		std::cout << "Choose Node Number: ";
+		std::cout << "Choose Vertex Number: ";
 		std::cin >> a;
 		if (a >= 0 && a < vertexSet.size())
 			break;
@@ -249,9 +249,9 @@ void Graph<T>::createLink(GraphViewer *gv){
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 			if (i != a)
-				std::cout << "Number: " << i << " - Node: "<< vertexSet[i]->getInfo() << std::endl;
+				std::cout << "Number: " << i << " - Vertex: "<< vertexSet[i]->getInfo() << std::endl;
 		}
-		std::cout << "Choose Node Number: ";
+		std::cout << "Choose Vertex Number: ";
 		std::cin >> b;
 		if (b >= 0 && b < vertexSet.size())
 			break;
@@ -260,17 +260,17 @@ void Graph<T>::createLink(GraphViewer *gv){
 	for (unsigned int i = 0; i < vertexSet[a]->getAdj().size(); i++){
 
 		if (vertexSet[a]->getAdj()[i].getDest()->getInfo() == vertexSet[b]->getInfo()){
-			std::cout << "The Nodes are already related, therefore it is impossible to establish a new Link. " << std::endl;
+			std::cout << "The Vertexs are already related, therefore it is impossible to establish a new Link. " << std::endl;
 			return ;
 		}
 	}
 	/*for (unsigned int i = 0; i < vertexSet[b]->getAdj().size(); i++){
 		if (vertexSet[b]->getAdj()[i].getDest()->getInfo() == vertexSet[a]->getInfo()){
-			std::cout << "The Nodes are already related, therefore it is impossible to establish a new Link. " << std::endl;
+			std::cout << "The Vertexs are already related, therefore it is impossible to establish a new Link. " << std::endl;
 			return false;
 		}
 	}*/
-	std::cout << "The Nodes are not related in any way. Please specify the Weight for the new Link: ";
+	std::cout << "The Vertexs are not related in any way. Please specify the Weight for the new Link: ";
 	std::cin >> weight;
 	Vertex<T> *n1 = new Vertex<T> { vertexSet[b]->getInfo() };
 	Edge<T> *l1 = new Edge<T> { n1, weight };
@@ -279,29 +279,29 @@ void Graph<T>::createLink(GraphViewer *gv){
 }
 
 template<class T>
-void Graph<T>::createNode(GraphViewer *gv){
+void Graph<T>::createVertex(GraphViewer *gv){
 
 	float lo { }, la { };
 	std::string info { };
 
-	std::cout << "New Node Name: ";
-	std::cin >> info;
-	//info = "Porto";
-	std::cout << "Node Longitude: ";
-	std::cin >> lo;
-	//lo = -8.607;
-	std::cout << "Node Latitude: ";
-	std::cin >> la;
-	//la = 41.178;
+	std::cout << "New Vertex Name: ";
+	//std::cin >> info;
+	info = "Porto";
+	std::cout << "Vertex Longitude: ";
+	//std::cin >> lo;
+	lo = -8.607;
+	std::cout << "Vertex Latitude: ";
+	//std::cin >> la;
+	la = 41.178;
 	Address a1(lo, la, info);
-	addNode(a1);
+	this->addVertex(a1);
 	gv->addNode(a1.getId(),lon2coord(lo)*width,lat2coord(la)*height);
 	gv->setVertexLabel(a1.getId(), info);
 	gv->setVertexColor(a1.getId(),CYAN);
 }
 
 template<class T>
-Vertex<T> * Graph<T>::findNode(unsigned int id) {
+Vertex<T> * Graph<T>::findVertex(unsigned int id) {
 	Vertex<Address> *vert { };
 	for (unsigned int i = 0; i < vertexSet.size(); i++) {
 		if (vertexSet[i]->getInfo().getId() == id) {
@@ -313,7 +313,7 @@ Vertex<T> * Graph<T>::findNode(unsigned int id) {
 }
 
 template<class T>
-Vertex<T> * Graph<T>::findNode(std::string name) {
+Vertex<T> * Graph<T>::findVertex(std::string name) {
 	Vertex<Address> *vert { };
 	for (unsigned int i = 0; i < vertexSet.size(); i++) {
 		if (vertexSet[i]->getInfo().getNome() == name) {
@@ -330,7 +330,7 @@ void Graph<T>::createGraph(){
 	std::ifstream file { };
 
 
-	file.open("nodes.csv");
+	file.open("Vertexs.csv");
 	int id { };
 	std::string line { };
 	std::string name { };
@@ -365,7 +365,7 @@ void Graph<T>::createGraph(){
 				else aux += line.at(i);
 			}
 			Address a1(id, longitude, latitude, name);
-			addNode(a1);
+			addVertex(a1);
 		}
 
 		file.close();
@@ -408,8 +408,8 @@ void Graph<T>::createGraph(){
 				else aux += line.at(i);
 			}
 
-			Address asource = findNode(sourceId)->getInfo();
-			Address adest = findNode(destId)->getInfo();
+			Address asource = findVertex(sourceId)->getInfo();
+			Address adest = findVertex(destId)->getInfo();
 			addEdge(asource, adest, weight, closed, vertId);  //Adiciona um para um  //Bidirecional. [1]->[2] [1]<-[2]
 			//addEdge(adest, asource, weight, closed);
 		}
@@ -447,7 +447,7 @@ Graph<T>* Graph<T>::clone()
 {
 	Graph<T>* ret { };
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)
-		ret->addNode(this->vertexSet[i]->getInfo());
+		ret->addVertex(this->vertexSet[i]->getInfo());
 
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)
 	{
@@ -460,13 +460,13 @@ Graph<T>* Graph<T>::clone()
 }
 
 template <class T>
-void Graph<T>::deleteNode(GraphViewer *gv) {
+void Graph<T>::deleteVertex(GraphViewer *gv) {
 	int a { };
 	while (true){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
-			std::cout << "Number: " << i << " - Node: " << vertexSet[i]->getInfo() << std::endl;
+			std::cout << "Number: " << i << " - Vertex: " << vertexSet[i]->getInfo() << std::endl;
 		}
-		std::cout << "Choose Node Number: ";
+		std::cout << "Choose Vertex Number: ";
 		std::cin >> a;
 		if (a >= 0 && a < vertexSet.size())
 			break;
@@ -533,11 +533,14 @@ void Graph<T>::dijkstra(Vertex<T> * source){
 }
 
 template <class T>
-bool Graph<T>::addNode(const T &in){
-	typename std::vector<Vertex<T>*>::iterator it= vertexSet.begin();
-	typename std::vector<Vertex<T>*>::iterator ite= vertexSet.end();
+bool Graph<T>::addVertex(const T &in){
+	typename std::vector<Vertex<T>*>::iterator it { };
+	it = vertexSet.begin();
+	typename std::vector<Vertex<T>*>::iterator ite { };
+	ite = vertexSet.end();
 	for (; it!=ite; it++)
 		if ((*it)->info == in) return false;
+
 	Vertex<T> *v1 = new Vertex<T> { in };
 	vertexSet.push_back(v1);
 	return true;

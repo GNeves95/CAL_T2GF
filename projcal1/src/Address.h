@@ -17,7 +17,7 @@
 #include <vector>
 //#include "Carro.h"
 
-class Carro;
+//class Carro;
 
 class Address {
 	static unsigned int id;

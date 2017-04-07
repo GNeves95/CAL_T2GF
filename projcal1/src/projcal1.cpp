@@ -78,21 +78,21 @@ int main() {
 		cout << "\t6.Save Graph" << endl;
 		cout << "\t7.Use Dijkstra" << endl;
 		//running = false;
-		cin >> a;
-		system("CLS");
-
+		//cin >> a;
+		//system("CLS");
+		a = '1';
 		switch (a){
 		case '1':
-			g->createNode(gv);
+			g->createVertex(gv);
 			break;
 		case '2':
-			g->createLink(gv);
+			g->createEdge(gv);
 			break;
 		case '3':
-			g->deleteNode(gv);
+			g->deleteVertex(gv);
 			break;
 		case '4':
-			g->deleteLink(gv);
+			g->deleteEdge(gv);
 			break;
 		case '5':
 			g->createGraph();

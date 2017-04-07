@@ -71,7 +71,7 @@ void GraphViewer::initialize(int width, int height, bool dynamic, int port_n) {
 	CloseHandle( pi.hThread );
 
 	Sleep(2000);
-	con = new Connection { port_n };
+	con = new Connection { (short)port_n };
 
 	char buff[200] { };
 	sprintf(buff, "newGraph %d %d %s\n", width, height, (dynamic?"true":"false"));
