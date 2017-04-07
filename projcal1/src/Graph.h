@@ -80,7 +80,7 @@ public:
 	void addEdge(Vertex<T> * dest, double wght);
 	void addEdge(Vertex<T> * dest, double wght, bool clsd, unsigned int i);
 
-	bool operator > (const Vertex<T> &v2) const;
+	bool operator < (const Vertex<T> &v2) const;
 	friend class Graph<T>;
 };
 
@@ -513,6 +513,10 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 			<< vert->getInfo().getMinDist() << ")";
 	while (vert != vertexSet.at(posVertice)) {
 		Vertex<Address> * aux = vert->getPrevious();
+		if(!aux){
+			std::cout << "No Path Found!" << std::endl;
+			return ;
+		}
 		//std::cout << "vert name: " << vert->getInfo() << std::endl;
 		std::cout << " <-- " << vert->getPrevious()->getInfo() << " dist("
 				<< vert->getPrevious()->getInfo().getMinDist() << ")";
@@ -596,6 +600,10 @@ void Graph<T>::dijkstra(Vertex<T> * source){
 	source->setInfo(sourceAddress);
 	std::vector<Vertex<T> *> vertHeap { };
 	Push(vertHeap, source);
+
+	for(unsigned int i=0; i < vertexSet.size(); i++) Push(vertHeap,vertexSet[i]);
+
+	std::sort_heap(vertHeap.begin(), vertHeap.end(), greater1());
 
 	while (vertHeap.size() != 0) {
 		Vertex<T> * u = Pop(vertHeap);
@@ -867,7 +875,7 @@ inline unsigned int Edge<T>::getId() {
 }
 
 template<class T>
-inline bool Vertex<T>::operator >(const Vertex<T>& v2) const {
+inline bool Vertex<T>::operator <(const Vertex<T>& v2) const {
 	return info.getMinDist() > v2->getInfo().getMinDist();;
 }
 

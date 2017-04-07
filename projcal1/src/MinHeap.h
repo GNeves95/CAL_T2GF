@@ -29,13 +29,21 @@ template <class T>
 void Remove(std::vector<Vertex<T> *>& heap, Vertex<T> * val);
 
 
+
+struct greater1 {
+	template<class T>
+	bool operator()(Vertex<T> *& a, Vertex<T> *& b) {
+
+		return a->getInfo().getMinDist() > b->getInfo().getMinDist();
+	}
+};
 /*
 * adiciona um node à heap
 */
 template<class T>
 void Push(std::vector<Vertex<T> *>& heap, Vertex<T> * val) {
 	heap.push_back(val);
-	std::push_heap(heap.begin(), heap.end());
+	std::push_heap(heap.begin(), heap.end(), greater1());
 }
 
 /*
@@ -43,10 +51,10 @@ void Push(std::vector<Vertex<T> *>& heap, Vertex<T> * val) {
 */
 template<class T>
 Vertex<T> * Pop(std::vector<Vertex<T> *>& heap) {
-	Vertex<T> * val = heap.front();
+	Vertex<Address> * val = heap.front();
 
 	//move o elemento com a menor minDisd para o final do vector
-	std::pop_heap(heap.begin(), heap.end());
+	std::pop_heap(heap.begin(), heap.end(), greater1());
 
 	//remove o ultimo elemento do vector que é o que tem a menor minDist
 	heap.pop_back();

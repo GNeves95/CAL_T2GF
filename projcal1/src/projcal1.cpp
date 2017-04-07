@@ -48,10 +48,6 @@ unsigned int numberPicker(Graph<Address> graf){
 	return -1;
 }
 
-void printGraph(GraphViewer *gv, Graph<Address> g){
-	gv->rearrange();
-}
-
 int main() {
 
 	Graph<Address> g { };
@@ -68,7 +64,7 @@ int main() {
 	g.createGraph(gv);
 	do{
 		char a { };
-		printGraph(gv,g);
+		gv->rearrange();
 		cout << "\t\tMenu: " << endl;
 		cout << "\n\t1.Create Node" << endl;
 		cout << "\t2.Create Link" << endl;
@@ -77,10 +73,11 @@ int main() {
 		cout << "\t5.Close Road" << endl; //<--
 		cout << "\t6.Open Road" << endl;
 		cout << "\t7.Use Dijkstra" << endl;
+		cout << "\tq.Exit" << endl;
 		//running = false;
-		//cin >> a;
+		cin >> a;
 		//system("CLS");
-		a = '7';
+		//a = '7';
 		switch (a){
 		case '1':
 			g.createVertex(gv);
@@ -103,19 +100,12 @@ int main() {
 		case '7':
 			//posVertice = numberPicker(g);
 			cout << "Choose source: ";
-			posVertice = 0;//numberPicker(g);
+			posVertice = numberPicker(g);
 			cout << "Choose destiny: ";
-			posDest = 1;//numberPicker(g);
+			posDest = numberPicker(g);
 			g1 = g.clone();
 			g1.setShortestPaths(posVertice);
 			g1.showPaths(posVertice, posDest, gv);
-			break;
-		case '8':
-			//primresult = g.calculatePrim();
-			break;
-		case '9':
-			posVertice = numberPicker(g);
-			//g.leastUsageOfCable(primresult, posVertice);
 			break;
 		case 'q':
 			g.saveGraph();
