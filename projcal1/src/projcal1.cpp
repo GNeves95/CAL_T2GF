@@ -58,7 +58,6 @@ int main() {
 	Graph<Address> g1 { };
 	Graph<Address> g2 { };
 
-	g.createGraph();
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
 	unsigned int posVertice { }, posDest { };
@@ -66,6 +65,7 @@ int main() {
 	GraphViewer *gv = new GraphViewer { width, height, false };
 	gv->createWindow(width,height);
 
+	g.createGraph(gv);
 	do{
 		char a { };
 		printGraph(gv,g);
@@ -75,12 +75,12 @@ int main() {
 		cout << "\t3.Delete Node" << endl;
 		cout << "\t4.Delete Link" << endl;
 		cout << "\t5.Close Road" << endl; //<--
-		cout << "\t6.Save Graph" << endl;
+		cout << "\t6.Open Road" << endl;
 		cout << "\t7.Use Dijkstra" << endl;
 		//running = false;
 		//cin >> a;
 		//system("CLS");
-		a = '1';
+		a = '7';
 		switch (a){
 		case '1':
 			g.createVertex(gv);
@@ -95,20 +95,20 @@ int main() {
 			g.deleteEdge(gv);
 			break;
 		case '5':
-			g.createGraph();
+			g.closeRoad(gv);
 			break;
 		case '6':
-			g.saveGraph();
+			g.openRoad(gv);
 			break;
 		case '7':
 			//posVertice = numberPicker(g);
 			cout << "Choose source: ";
-			posVertice = numberPicker(g);
+			posVertice = 0;//numberPicker(g);
 			cout << "Choose destiny: ";
-			posDest = numberPicker(g);
-			g2 = g1.clone();
-			g2.setShortestPaths(posVertice);
-			g2.showPaths(posVertice, posDest, gv);
+			posDest = 1;//numberPicker(g);
+			g1 = g.clone();
+			g1.setShortestPaths(posVertice);
+			g1.showPaths(posVertice, posDest, gv);
 			break;
 		case '8':
 			//primresult = g.calculatePrim();
@@ -118,6 +118,7 @@ int main() {
 			//g.leastUsageOfCable(primresult, posVertice);
 			break;
 		case 'q':
+			g.saveGraph();
 			running = false;
 			break;
 		default:

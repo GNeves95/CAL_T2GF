@@ -100,7 +100,7 @@ bool Address::operator ==(const Address& a2) const {
 
 std::string Address::fileFormat() {
 	stringstream ss { } ;
-	ss << thisId << ";" << longitude << ";" << latitude << ";" << addr;
+	ss << thisId << ";" << longitude << ";" << latitude << ";" << addr << ";";
 	return ss.str();
 }
 
