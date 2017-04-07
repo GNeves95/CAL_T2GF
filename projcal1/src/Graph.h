@@ -143,7 +143,7 @@ public:
 	void deleteVertex(GraphViewer *gv);
 	void showPaths(int posVertice, int posDest, GraphViewer *gv);
 	void setShortestPaths(int posVertice);
-	Graph<T>* clone();
+	Graph<T> clone();
 };
 
 //Graph
@@ -440,7 +440,7 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 				<< vert->getPrevious()->getInfo().getMinDist() << ")";
 
 		for(unsigned int i=0; i < aux->getAdj().size(); i++){
-			if(aux->getAdj()[i].dest == vert){
+			if(aux->getAdj()[i].getDest() == vert){
 				gv->setEdgeColor(aux->getAdj()[i].getId(),GREEN);
 				break;
 			}
@@ -453,7 +453,7 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 }
 
 template <class T>
-Graph<T>* Graph<T>::clone()
+Graph<T> Graph<T>::clone()
 {
 	Graph<T>* ret { };
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)

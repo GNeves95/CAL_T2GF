@@ -34,31 +34,31 @@ float lat2coord(float x){
 }
  */
 
-unsigned int numberPicker(Graph<Address> *graf){
+unsigned int numberPicker(Graph<Address> graf){
 
 	unsigned int a { };
 	while (true){
-		for (unsigned int i = 1; i <= graf->getVertexSet().size(); i++){
-			cout << "Index: " << i << " " << graf->getVertexSet()[i-1]->getInfo().getNome() << endl;
+		for (unsigned int i = 1; i <= graf.getVertexSet().size(); i++){
+			cout << "Index: " << i << " " << graf.getVertexSet()[i-1]->getInfo().getNome() << endl;
 		}
 		cin >> a;
-		if (a > 0 && a <= graf->getVertexSet().size())
+		if (a > 0 && a <= graf.getVertexSet().size())
 			return a - 1;
 	}
 	return -1;
 }
 
-void printGraph(GraphViewer *gv, Graph<Address> *g){
+void printGraph(GraphViewer *gv, Graph<Address> g){
 	gv->rearrange();
 }
 
 int main() {
 
-	Graph<Address> *g { };
-	Graph<Address> *g1 { };
-	Graph<Address> *g2 { };
+	Graph<Address> g { };
+	Graph<Address> g1 { };
+	Graph<Address> g2 { };
 
-	g->createGraph();
+	g.createGraph();
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
 	unsigned int posVertice { }, posDest { };
@@ -83,22 +83,22 @@ int main() {
 		a = '1';
 		switch (a){
 		case '1':
-			g->createVertex(gv);
+			g.createVertex(gv);
 			break;
 		case '2':
-			g->createEdge(gv);
+			g.createEdge(gv);
 			break;
 		case '3':
-			g->deleteVertex(gv);
+			g.deleteVertex(gv);
 			break;
 		case '4':
-			g->deleteEdge(gv);
+			g.deleteEdge(gv);
 			break;
 		case '5':
-			g->createGraph();
+			g.createGraph();
 			break;
 		case '6':
-			g->saveGraph();
+			g.saveGraph();
 			break;
 		case '7':
 			//posVertice = numberPicker(g);
@@ -106,9 +106,9 @@ int main() {
 			posVertice = numberPicker(g);
 			cout << "Choose destiny: ";
 			posDest = numberPicker(g);
-			g2 = g1->clone();
-			g2->setShortestPaths(posVertice);
-			g2->showPaths(posVertice, posDest, gv);
+			g2 = g1.clone();
+			g2.setShortestPaths(posVertice);
+			g2.showPaths(posVertice, posDest, gv);
 			break;
 		case '8':
 			//primresult = g.calculatePrim();
