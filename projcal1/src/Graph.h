@@ -181,13 +181,13 @@ void Graph<T>::saveGraph(){
 		for (unsigned int i = 0; i < vertexSet.size(); i++){
 			for (unsigned int j = 0; j < vertexSet[i]->getAdj().size(); j++){
 				//if (!vertexSet[i]->getAdj()[j].getDest()->getVisited()){
-					file2 << vertexSet[i]->getInfo().getId() << ";";
-					file2 << vertexSet[i]->getAdj()[j].getDest()->getInfo().getId() << ";";
-					file2 << vertexSet[i]->getAdj()[j].getWeight() << ";";
-					if(vertexSet[i]->getAdj()[j].getClosed())file2 << 1 << ";";
-					else file2 << 0 << ";";
-					//file2 << ((vertexSet[i]->getAdj()[j].getClosed())?'1':'0') << ";";
-					file2 << vertexSet[i]->getAdj()[j].getId() << ";" << std::endl;
+				file2 << vertexSet[i]->getInfo().getId() << ";";
+				file2 << vertexSet[i]->getAdj()[j].getDest()->getInfo().getId() << ";";
+				file2 << vertexSet[i]->getAdj()[j].getWeight() << ";";
+				if(vertexSet[i]->getAdj()[j].getClosed())file2 << 1 << ";";
+				else file2 << 0 << ";";
+				//file2 << ((vertexSet[i]->getAdj()[j].getClosed())?'1':'0') << ";";
+				file2 << vertexSet[i]->getAdj()[j].getId() << ";" << std::endl;
 				//}
 			}
 			vertexSet[i]->setVisited(true);
@@ -522,8 +522,22 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 				<< vert->getPrevious()->getInfo().getMinDist() << ")";
 
 		for(unsigned int i=0; i < aux->getAdj().size(); i++){
-			if(aux->getAdj()[i].getDest() == vert){
-				gv->setEdgeColor(aux->getAdj()[i].getId(),GREEN);
+			if(aux->getAdj()[i].getDest()->getInfo().getNome() == vert->getInfo().getNome()){
+				unsigned int auxid { 9999};
+				//std::cerr << aux->getAdj()[i].getId() << std::endl;
+				for(unsigned int j=0; j < vertexSet.size(); j++){
+					if(vertexSet[j]->getInfo().getNome() == aux->getInfo().getNome()){
+						for(unsigned int k = 0; k < vertexSet[j]->getAdj().size(); k++){
+							if(vertexSet[j]->getAdj()[k].getDest()->getInfo().getNome() == vert->getInfo().getNome()){
+								auxid = vertexSet[j]->getAdj()[k].getId();
+								break;
+							}
+						}
+						break;
+					}
+				}
+				//std::cerr << auxid << std::endl;
+				gv->setEdgeColor(auxid,GREEN);
 				break;
 			}
 		}
@@ -583,8 +597,48 @@ void Graph<T>::deleteVertex(GraphViewer *gv) {
 
 template <class T>
 void Graph<T>::dijkstra(Vertex<T> * source){
+	double maxdist = 99999;
+	for(unsigned int i=0; i < vertexSet.size(); i++){
+		this->vertexSet[i]->setPrevious(0);
+		T aux = this->vertexSet[i]->getInfo();
+		aux.setMinDist(maxdist);
+		this->vertexSet[i]->setInfo(aux);
+	}
 
-	double maxdist = 999999;
+	T sourceAdd = source->getInfo();
+	sourceAdd.setMinDist(0);
+	source->setInfo(sourceAdd);
+	std::vector<Vertex<T> *> heap { };
+	heap.push_back(source);
+	//source->setVisited();
+	bool searching { true };
+	do{
+		std::vector<Vertex<T> *> aux_heap { };
+		while(heap.size() != 0){
+			heap.at(0)->setVisited(true);
+			for(unsigned int i = 0; i < heap.at(0)->getAdj().size(); i++){
+				if(!(heap.at(0)->getAdj()[i].getClosed())){
+					double dist { };
+					dist = heap.at(0)->getInfo().getMinDist() + heap.at(0)->getAdj()[i].getWeight();
+					if(dist < heap.at(0)->getAdj()[i].getDest()->getInfo().getMinDist()){
+						heap.at(0)->getAdj()[i].getDest()->setPrevious(heap.at(0));
+
+						T aux = heap.at(0)->getAdj()[i].getDest()->getInfo();
+						aux.setMinDist(dist);
+						heap.at(0)->getAdj()[i].getDest()->setInfo(aux);
+					}
+					if(!(heap.at(0)->getAdj()[i].getDest()->getVisited())) aux_heap.push_back(heap.at(0)->getAdj()[i].getDest());
+
+				}
+			}
+			heap.erase(heap.begin());
+		}
+		if(aux_heap.size() != 0) heap = aux_heap;
+		else searching = false;
+	}
+	while(searching);
+
+	/*
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++) {
 		this->vertexSet[i]->setPath(NULL);
 		for (unsigned int j = 0; j < vertexSet[i]->getAdj().size(); j++){
@@ -625,7 +679,7 @@ void Graph<T>::dijkstra(Vertex<T> * source){
 
 			}
 		}
-	}
+	}*/
 }
 
 template <class T>
