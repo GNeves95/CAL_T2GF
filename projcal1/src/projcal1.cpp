@@ -78,6 +78,18 @@ int main() {
 		cin >> a;
 		//system("CLS");
 		//a = '7';
+
+		for(unsigned int i = 0; i < g.getVertexSet().size(); i++){
+			for(unsigned int j = 0; j < g.getVertexSet()[i]->getAdj().size(); j++){
+				if(g.getVertexSet()[i]->getAdj()[j].getClosed() == false){
+					gv->setEdgeColor(g.getVertexSet()[i]->getAdj()[j].getId(), BLACK);
+				}
+				else{
+					gv->setEdgeColor(g.getVertexSet()[i]->getAdj()[j].getId(), RED);
+				}
+			}
+		}
+
 		switch (a){
 		case '1':
 			g.createVertex(gv);
@@ -103,9 +115,11 @@ int main() {
 			posVertice = numberPicker(g);
 			cout << "Choose destiny: ";
 			posDest = numberPicker(g);
-			g1 = g.clone();
-			g1.setShortestPaths(posVertice);
-			g1.showPaths(posVertice, posDest, gv);
+			//g1 = g.clone();
+			//g1.setShortestPaths(posVertice);
+			//g1.showPaths(posVertice, posDest, gv);
+			g.setShortestPaths(posVertice);
+			g.showPaths(posVertice, posDest, gv);
 			break;
 		case 'q':
 			g.saveGraph();
