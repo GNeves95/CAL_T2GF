@@ -16,23 +16,7 @@
 #include "graphviewer.h"
 using namespace std;
 
-//constexpr int height { 400 };
-//constexpr int width { 200 };
 
-/*constexpr float maxLatitude = 42.5;
-constexpr float minLatitude = 36.8;
-
-constexpr float maxLongitude = -6.1;
-constexpr float minLongitude = -10.3;
-
-float lon2coord(float x){
-	return (x-minLongitude)/(maxLatitude-minLongitude);
-}
-
-float lat2coord(float x){
-	return (x-maxLongitude)/(minLatitude-maxLongitude);
-}
- */
 
 unsigned int numberPicker(Graph<Address> graf){
 
@@ -73,6 +57,8 @@ int main() {
 		cout << "\t5.Close Road" << endl; //<--
 		cout << "\t6.Open Road" << endl;
 		cout << "\t7.Use Dijkstra" << endl;
+		cout << "\t8.Search Exact Road" << endl;
+		cout << "\t9.Search Approximate Road" << endl;
 		cout << "\tq.Exit" << endl;
 		//running = false;
 		cin >> a;
@@ -115,11 +101,24 @@ int main() {
 			posVertice = numberPicker(g);
 			cout << "Choose destiny: ";
 			posDest = numberPicker(g);
-			//g1 = g.clone();
-			//g1.setShortestPaths(posVertice);
-			//g1.showPaths(posVertice, posDest, gv);
-			g.setShortestPaths(posVertice);
-			g.showPaths(posVertice, posDest, gv);
+			g1 = g.clone();
+			g1.setShortestPaths(posVertice);
+			g1.showPaths(posVertice, posDest, gv);
+			//g.setShortestPaths(posVertice);
+			//g.showPaths(posVertice, posDest, gv);
+			break;
+		case '8':
+			string road { };
+			cout << "Road to search for: ";
+			cin >> road;
+			cout << "Choose destiny: ";
+			posDest = numberPicker(g);
+			g1 = g.clone();
+			g1.setShortestPaths(posVertice);
+			g1.showPaths(posVertice, posDest, gv);
+			break;
+		case '9':
+
 			break;
 		case 'q':
 			g.saveGraph();
