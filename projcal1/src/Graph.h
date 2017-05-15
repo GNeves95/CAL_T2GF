@@ -36,6 +36,26 @@ float lat2coord(float x){
 	return (x-maxLatitude)/(minLatitude-maxLatitude);
 }
 
+unsigned int levenshtein_distance(const std::string& s1, const std::string& s2){
+	const std::size_t len1 = s1.size(), len2 = s2.size();
+
+	std::vector<unsigned int> col(len2+1), prevCol(len2+1);
+
+	for(unsigned int i { 0 }; i < prevCol.size(); i++){
+		prevCol[i] = i;
+	}
+
+	for(unsigned int i { 0 }; i < len1; i++){
+		col[0] = i+1;
+		for(unsigned int j { 0 }; j < len2; j++){
+			col[j+1] = std::min({prevCol[1+j] + 1, col[j] + 1, prevCol[j] + (s1[i] == s2[j] ? 0:1)});
+		}
+		col.swap(prevCol);
+	}
+
+	return prevCol.size();
+}
+
 template <class T> class Edge;
 template <class T> class Graph;
 
@@ -128,8 +148,10 @@ Edge<T>::Edge(Vertex<T> *d, double w, bool c, unsigned int i, std::string n): de
 template <class T>
 class Graph {
 	std::vector<Vertex<T> *> vertexSet;
+	std::vector<Edge<T> *> edgeSet;
 public:
 	std::vector<Vertex<T> * > getVertexSet() const;
+	std::vector<Edge<T> * > getEdgeSet() const;
 	int getNumVertex() const;
 	bool addEdge(const T &sourc, const T &dest, double w, bool c, unsigned int i, std::string n);
 	bool addEdge(const T &sourc, const T &dest, double w, bool c, std::string n);
@@ -566,12 +588,13 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 
 template<class T>
 inline Vertex<T>* Graph<T>::searchExactRoadDest(std::string road) {
-	for(unsigned int i { 0 }; i < vertexSet.size();i++){
-		for(unsigned int j { 0 }; j < vertexSet[i].getAdj().size();j++){
-
+	for(unsigned int i { 0 }; i < edgeSet.size();i++){
+		if(edgeSet[i].getName() == road){
+			return edgeSet[i].getDest();
 		}
 	}
-	return vertexSet[0];
+	std::cout << "No matching street found!\n" << std::endl;
+	return 0;
 }
 
 template<class T>
@@ -747,6 +770,8 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, bool c, unsigned
 		return false;
 	vS->addEdge(vD, w, c, i, n);
 
+	edgeSet.push_back(vS->getAdj()[vS->getAdj().size()-1]);
+
 	return true;
 }
 
@@ -770,6 +795,8 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, bool c, std::str
 	if (found != 2)
 		return false;
 	vS->addEdge(vD, w, n);
+
+	edgeSet.push_back(vS->getAdj()[vS->getAdj().size()-1]);
 
 	return true;
 }
