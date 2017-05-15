@@ -40,11 +40,12 @@ int main() {
 
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
-	unsigned int posVertice { }, posDest { };
+	int posVertice { }, posDest { };
 
 	GraphViewer *gv = new GraphViewer { width, height, false };
 	gv->createWindow(width,height);
 
+	//g.createGraph(gv);
 	g.createGraph(gv);
 	do{
 		char a { };
@@ -75,6 +76,7 @@ int main() {
 				}
 			}
 		}
+		string road { };
 
 		switch (a){
 		case '1':
@@ -108,17 +110,29 @@ int main() {
 			//g.showPaths(posVertice, posDest, gv);
 			break;
 		case '8':
-			string road { };
 			cout << "Road to search for: ";
 			cin >> road;
-			cout << "Choose destiny: ";
-			posDest = numberPicker(g);
 			g1 = g.clone();
-			g1.setShortestPaths(posVertice);
-			g1.showPaths(posVertice, posDest, gv);
+			posVertice = g1.searchExactRoadDest(road);
+			if(posVertice != -1){
+				cout << "Choose destiny: ";
+				posDest = numberPicker(g);
+				g1.setShortestPaths(posVertice);
+				g1.showPaths(posVertice, posDest, gv);
+			}
 			break;
 		case '9':
-
+			cout << "Road to search for: ";
+			cin >> road;
+			g1 = g.clone();
+			posVertice = g1.searchAproxRoadDest(road);
+			if(posVertice != -1){
+				cout << "Choose destiny: ";
+				posDest = numberPicker(g);
+				g1.setShortestPaths(posVertice);
+				g1.showPaths(posVertice, posDest, gv);
+			}
+			break;
 			break;
 		case 'q':
 			g.saveGraph();

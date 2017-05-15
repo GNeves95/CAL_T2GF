@@ -148,7 +148,7 @@ Edge<T>::Edge(Vertex<T> *d, double w, bool c, unsigned int i, std::string n): de
 template <class T>
 class Graph {
 	std::vector<Vertex<T> *> vertexSet;
-	std::vector<Edge<T> *> edgeSet;
+	std::vector<Edge<T>> edgeSet;
 public:
 	std::vector<Vertex<T> * > getVertexSet() const;
 	std::vector<Edge<T> * > getEdgeSet() const;
@@ -170,8 +170,8 @@ public:
 	void deleteVertex(GraphViewer *gv);
 	void showPaths(int posVertice, int posDest, GraphViewer *gv);
 	void setShortestPaths(int posVertice);
-	Vertex<T> * searchExactRoadDest(std::string road);
-	Vertex<T> * searchAproxRoadDest(std::string road);
+	int searchExactRoadDest(std::string road);
+	int searchAproxRoadDest(std::string road);
 	Graph<T> clone();
 };
 
@@ -587,18 +587,47 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 }
 
 template<class T>
-inline Vertex<T>* Graph<T>::searchExactRoadDest(std::string road) {
+int Graph<T>::searchExactRoadDest(std::string road) {
 	for(unsigned int i { 0 }; i < edgeSet.size();i++){
-		if(edgeSet[i].getName() == road){
-			return edgeSet[i].getDest();
+		if(edgeSet[i].getName() == road && !(edgeSet[i].getClosed())){
+			for(unsigned int j { 0 }; j < vertexSet.size(); j++){
+				if(vertexSet[j] == edgeSet[i].getDest()) return j;
+			}
 		}
 	}
-	std::cout << "No matching street found!\n" << std::endl;
-	return 0;
+	std::cout << "No matching/open street found!\n" << std::endl;
+	return -1;
 }
 
 template<class T>
-inline Vertex<T>* Graph<T>::searchAproxRoadDest(std::string road) {
+int Graph<T>::searchAproxRoadDest(std::string road) {
+	if(edgeSet.size() > 0){
+		std::vector<unsigned int> pos { };
+		for(unsigned int i { 0 }; i < edgeSet.size();i++){
+			bool inserted { false};
+			for(unsigned int j { 0 }; j < pos.size();j++){
+				if(levenshtein_distance(road, edgeSet[i].getName()) < levenshtein_distance(road, edgeSet[pos[j]].getName())){
+					pos.insert(pos.begin()+j,i);
+					inserted = true;
+				}
+			}
+			if(!inserted) pos.push_back(i);
+		}
+		int choice { };
+		std::cout << "Did you mean: " << std::endl;
+		std::cout << "\t1." << edgeSet[pos[0]].getName() << std::endl;
+		std::cout << "\t2." << edgeSet[pos[1]].getName() << std::endl;
+		std::cout << "\t3." << edgeSet[pos[2]].getName() << std::endl;
+		std::cin >> choice;
+
+		if(choice > 0 && choice < 4)
+			for(unsigned int i { 0 }; i < vertexSet.size(); i++){
+				if(vertexSet[i] == edgeSet[pos[choice-1]].getDest()) return i;
+			}
+
+		std::cout << "No matching/open street found!\n" << std::endl;
+	}
+	return -1;
 }
 
 template <class T>
@@ -769,8 +798,9 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, bool c, unsigned
 	if (found != 2)
 		return false;
 	vS->addEdge(vD, w, c, i, n);
+	unsigned int aux { vS->getAdj().size()};
 
-	edgeSet.push_back(vS->getAdj()[vS->getAdj().size()-1]);
+	edgeSet.push_back(vS->getAdj().at(aux-1));
 
 	return true;
 }
@@ -795,8 +825,9 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, bool c, std::str
 	if (found != 2)
 		return false;
 	vS->addEdge(vD, w, n);
+	unsigned int aux { vS->getAdj().size()};
 
-	edgeSet.push_back(vS->getAdj()[vS->getAdj().size()-1]);
+	edgeSet.push_back(vS->getAdj().at(aux-1));
 
 	return true;
 }
