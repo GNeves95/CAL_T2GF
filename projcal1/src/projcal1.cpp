@@ -36,7 +36,7 @@ int main() {
 
 	Graph<Address> g { };
 	Graph<Address> g1 { };
-	Graph<Address> g2 { };
+	//Graph<Address> g2 { };
 
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
@@ -104,7 +104,7 @@ int main() {
 			cout << "Choose destiny: ";
 			posDest = numberPicker(g);
 			g1 = g.clone();
-			g1.setShortestPaths(posVertice);
+			g1.setShortestPaths(g1.getVertexSet()[posDest]);
 			g1.showPaths(posVertice, posDest, gv);
 			//g.setShortestPaths(posVertice);
 			//g.showPaths(posVertice, posDest, gv);
@@ -117,7 +117,7 @@ int main() {
 			if(posVertice != -1){
 				cout << "Choose destiny: ";
 				posDest = numberPicker(g);
-				g1.setShortestPaths(posVertice);
+				g1.setShortestPaths(g1.getVertexSet()[posDest]);
 				g1.showPaths(posVertice, posDest, gv);
 			}
 			break;
@@ -129,7 +129,7 @@ int main() {
 			if(posVertice != -1){
 				cout << "Choose destiny: ";
 				posDest = numberPicker(g);
-				g1.setShortestPaths(posVertice);
+				g1.setShortestPaths(g1.getVertexSet()[posDest]);
 				g1.showPaths(posVertice, posDest, gv);
 			}
 			break;

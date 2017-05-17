@@ -18,6 +18,7 @@
 #include "graphviewer.h"
 #include "Address.h"
 #include "MinHeap.h"
+#include "Trie.h"
 
 constexpr int height { 400 };
 constexpr int width { 200 };
@@ -166,10 +167,13 @@ Edge<T>::Edge(Vertex<T> *d, double w, std::string n): dest(d){weight = w; closed
 template <class T>
 Edge<T>::Edge(Vertex<T> *d, double w, bool c, unsigned int i, std::string n): dest(d){weight = w; closed = c; origem = 0; thisId = i; if(id <= i) id=i+1; name = n;}
 
+template <class T> class Trie;
+
 template <class T>
 class Graph {
 	std::vector<Vertex<T> *> vertexSet;
 	std::vector<Edge<T>> edgeSet;
+	Trie<T> ruas;
 public:
 	std::vector<Vertex<T> * > getVertexSet() const;
 	std::vector<Edge<T> * > getEdgeSet() const;
@@ -190,7 +194,7 @@ public:
 	void openRoad(GraphViewer *gv);
 	void deleteVertex(GraphViewer *gv);
 	void showPaths(int posVertice, int posDest, GraphViewer *gv);
-	void setShortestPaths(int posVertice);
+	void setShortestPaths(Vertex<T> * vert1);
 	int searchExactRoadDest(std::string road);
 	int searchAproxRoadDest(std::string road);
 	Graph<T> clone();
@@ -247,9 +251,9 @@ void Graph<T>::saveGraph(){
 }
 
 template<class T>
-void Graph<T>::setShortestPaths(int posVertice) {
+void Graph<T>::setShortestPaths(Vertex<T> * vert1) {
 
-	Vertex<T> * vert1 = vertexSet[posVertice];
+	//Vertex<T> * vert1 = vertexSet[posVertice];
 	dijkstra(vert1);
 }
 
@@ -406,6 +410,14 @@ void Graph<T>::createEdge(GraphViewer *gv){
 	gv->addEdge(l1->getId(),vertexSet[a]->getInfo().getId(), vertexSet[b]->getInfo().getId(),EdgeType::DIRECTED);
 	gv->setEdgeLabel(l1->getId(),name);
 	vertexSet[a]->setAdj(*l1);
+
+	char input[100] { };
+	std::strcpy(input,name.c_str());
+	char *token = std::strtok(input, " ");
+	while (token != NULL) {
+		ruas.insertWord(std::string(token),l1);
+		token = std::strtok(NULL, " ");
+	}
 }
 
 template<class T>
@@ -609,7 +621,11 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 
 template<class T>
 int Graph<T>::searchExactRoadDest(std::string road) {
-	for(unsigned int i { 0 }; i < edgeSet.size();i++){
+
+
+	std::vector<Edge<T> *> edges { };
+
+	for(unsigned int i { 0 }; i < edges.size();i++){
 		if(edgeSet[i].getName() == road && !(edgeSet[i].getClosed())){
 			for(unsigned int j { 0 }; j < vertexSet.size(); j++){
 				if(vertexSet[j] == edgeSet[i].getDest()) return j;

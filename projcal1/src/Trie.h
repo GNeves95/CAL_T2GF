@@ -13,13 +13,15 @@
 #include <vector>
 #include "Graph.h"
 
+template <class T> class Edge;
+
 template <class T>
 class Node{
 private:
 	char c;
 	std::vector<Node<T>*> children;
 	bool fim;
-	std::vector<Vertex<T> > vertexSet;
+	std::vector<Edge<T> *> EdgeSet;
 public:
 	Node() {c=-1; fim = false;};
 	Node(char ch, bool f);
@@ -28,6 +30,8 @@ public:
 	bool getFim();
 	Node<T> *getFilho(char ch);
 	Node<T> *addFilho(char ch, bool f);
+	void addEdge(Edge<T> * edge);
+	std::vector<Edge<T> *> getEdges();
 };
 
 template <class T>
@@ -36,8 +40,8 @@ private:
 	Node<T> *root;
 public:
 	Trie();
-	void insertWord(std::string word);
-	bool search(std::string word);
+	void insertWord(std::string word, Edge<T> *edge);
+	std::vector<Edge<T> *> search(std::string word);
 
 };
 
@@ -76,6 +80,16 @@ Node<T>* Node<T>::getFilho(char ch){
 	return 0;
 }
 
+template<class T>
+inline void Node<T>::addEdge(Edge<T>* edge) {
+	this->EdgeSet.push_back(edge);
+}
+
+template<class T>
+inline std::vector<Edge<T> *> Node<T>::getEdges() {
+	return this->EdgeSet;
+}
+
 //TRIE
 
 template <class T>
@@ -84,26 +98,29 @@ Trie<T>::Trie(){
 }
 
 template <class T>
-void Trie<T>::insertWord(std::string word){
+void Trie<T>::insertWord(std::string word, Edge<T> *edge){
 	Node<T> *aux = root;
 
 	for(unsigned int i=0; i < word.length()-1; i++){
 		aux = aux->addFilho(word[i], false);
 	}
-	aux->addFilho(word[word.length()-1], true);
+	aux = aux->addFilho(word[word.length()-1], true);
+	aux->addEdge(edge);
 }
 
 template <class T>
-inline bool Trie<T>::search(std::string word) {
+std::vector<Edge<T> *> Trie<T>::search(std::string word) {
 	Node<T> *aux = root;
+
+	std::vector<Edge<T> *> empty { };
 
 	for(unsigned int i = 0; i < word.length()-1; i++){
 		aux = aux->getFilho(word[i]);
-		if(aux == 0) return false;
+		if(aux == 0) return empty;
 	}
 	aux = aux->getFilho(word[word.length()-1]);
-	if(aux)	return aux->getFim();
-	else return false;
+	if(aux && aux->getFim())	return aux->getEdges();
+	else return empty;
 }
 
 #endif /* TRIE_H_ */
