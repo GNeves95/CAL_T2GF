@@ -36,8 +36,8 @@ float lat2coord(float x){
 	return (x-maxLatitude)/(minLatitude-maxLatitude);
 }
 
-unsigned int levenshtein_distance(const std::string& s1, const std::string& s2){
-	const std::size_t len1 = s1.size(), len2 = s2.size();
+unsigned int levenshtein_distance(const std::string& pattern, const std::string& text){
+	/*const std::size_t len1 = s1.size(), len2 = s2.size();
 
 	std::vector<unsigned int> col(len2+1), prevCol(len2+1);
 
@@ -53,7 +53,28 @@ unsigned int levenshtein_distance(const std::string& s1, const std::string& s2){
 		col.swap(prevCol);
 	}
 
-	return prevCol.size();
+	return prevCol.size();*/
+	int n=text.length();
+	std::vector<int> d(n+1);
+	int old { },neww { };
+	for (int j=0; j<=n; j++)
+		d[j]=j;
+	int m=pattern.length();
+	for (int i=1; i<=m; i++) {
+		old = d[0];
+		d[0]=i;
+		for (int j=1; j<=n; j++) {
+			if (pattern[i-1]==text[j-1]) neww = old;
+			else {
+				neww = std::min(old,d[j]);
+				neww = std::min(neww,d[j-1]);
+				neww = neww +1;
+			}
+			old = d[j];
+			d[j] = neww;
+		}
+	}
+	return d[n];
 }
 
 template <class T> class Edge;
@@ -601,30 +622,50 @@ int Graph<T>::searchExactRoadDest(std::string road) {
 
 template<class T>
 int Graph<T>::searchAproxRoadDest(std::string road) {
+	std::cout << "entered searchAproxRoadDest!\n";
 	if(edgeSet.size() > 0){
+		std::cout << "edgeSet not empty!\n";
 		std::vector<unsigned int> pos { };
 		for(unsigned int i { 0 }; i < edgeSet.size();i++){
+			std::cout << i << " strings compared, where i is smaller than size: " << edgeSet.size() << "!\n\n";
 			bool inserted { false};
-			for(unsigned int j { 0 }; j < pos.size();j++){
-				if(levenshtein_distance(road, edgeSet[i].getName()) < levenshtein_distance(road, edgeSet[pos[j]].getName())){
+			/*for(unsigned int j { 0 }; j < pos.size() || j < 100;j++){
+				std::cout << "comparing with previous strings, iteration " << j << "!\n";
+
+				std::cout << levenshtein_distance(road, edgeSet[i].getName()) << " vs " << levenshtein_distance(road, edgeSet[pos[j]].getName());
+
+				if(levenshtein_distance(road, edgeSet[i].getName()) > levenshtein_distance(road, edgeSet[pos[j]].getName())){
 					pos.insert(pos.begin()+j,i);
 					inserted = true;
+					break;
 				}
-			}
+			}*/
+			std::cout << levenshtein_distance("A1", "a") << std::endl;
+			std::cout << levenshtein_distance("A1", "A18") << std::endl;
+			std::cout << levenshtein_distance("A1", "ola A1") << std::endl;
+			std::cout << levenshtein_distance("A1", "1A") << std::endl;
+			std::cout << levenshtein_distance("A1", "A") << std::endl;
+			std::cout << levenshtein_distance("A1", "A1") << std::endl;
 			if(!inserted) pos.push_back(i);
 		}
+		std::cout << "compared every string!\n";
 		int choice { };
-		std::cout << "Did you mean: " << std::endl;
-		std::cout << "\t1." << edgeSet[pos[0]].getName() << std::endl;
-		std::cout << "\t2." << edgeSet[pos[1]].getName() << std::endl;
-		std::cout << "\t3." << edgeSet[pos[2]].getName() << std::endl;
-		std::cin >> choice;
-
-		if(choice > 0 && choice < 4)
-			for(unsigned int i { 0 }; i < vertexSet.size(); i++){
-				if(vertexSet[i] == edgeSet[pos[choice-1]].getDest()) return i;
+		if(pos.size()>0){
+			std::cout << "Did you mean: " << std::endl;
+			std::cout << "\t1." << edgeSet[pos[0]].getName() << std::endl;
+			if(pos.size()>1){
+				std::cout << "\t2." << edgeSet[pos[1]].getName() << std::endl;
+				if(pos.size()>2){
+					std::cout << "\t3." << edgeSet[pos[2]].getName() << std::endl;
+				}
 			}
+			std::cin >> choice;
 
+			if(choice > 0 && choice < 4 && choice <= pos.size())
+				for(unsigned int i { 0 }; i < vertexSet.size(); i++){
+					if(vertexSet[i] == edgeSet[pos[choice-1]].getDest()) return i;
+				}
+		}
 		std::cout << "No matching/open street found!\n" << std::endl;
 	}
 	return -1;
