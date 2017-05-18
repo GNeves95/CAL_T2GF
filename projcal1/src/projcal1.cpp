@@ -41,6 +41,7 @@ int main() {
 	vector<Edge<Address> *> primresult { };
 	bool running { true };
 	int posVertice { }, posDest { };
+	Vertex<Address> * posVerSearch { };
 
 	GraphViewer *gv = new GraphViewer { width, height, false };
 	gv->createWindow(width,height);
@@ -99,13 +100,15 @@ int main() {
 			break;
 		case '7':
 			//posVertice = numberPicker(g);
-			cout << "Choose source: ";
-			posVertice = numberPicker(g);
-			cout << "Choose destiny: ";
-			posDest = numberPicker(g);
 			g1 = g.clone();
+			cout << "Choose source: ";
+			posVertice = numberPicker(g1);
+			//posVertice = 1;
+			cout << "Choose destiny: ";
+			posDest = numberPicker(g1);
+			//posDest = 2;
 			g1.setShortestPaths(g1.getVertexSet()[posDest]);
-			g1.showPaths(posVertice, posDest, gv);
+			g1.showPaths(g1.getVertexSet()[posVertice], g1.getVertexSet()[posDest], gv);
 			//g.setShortestPaths(posVertice);
 			//g.showPaths(posVertice, posDest, gv);
 			break;
@@ -113,12 +116,12 @@ int main() {
 			cout << "Road to search for: ";
 			cin >> road;
 			g1 = g.clone();
-			posVertice = g1.searchExactRoadDest(road);
-			if(posVertice != -1){
+			posVerSearch = g1.searchExactRoadDest(road);
+			if(posVerSearch != 0){
 				cout << "Choose destiny: ";
-				posDest = numberPicker(g);
+				posDest = numberPicker(g1);
 				g1.setShortestPaths(g1.getVertexSet()[posDest]);
-				g1.showPaths(posVertice, posDest, gv);
+				g1.showPaths(posVerSearch, g1.getVertexSet()[posDest], gv);
 			}
 			break;
 		case '9':
@@ -128,11 +131,11 @@ int main() {
 			posVertice = g1.searchAproxRoadDest(road);
 			if(posVertice != -1){
 				cout << "Choose destiny: ";
-				posDest = numberPicker(g);
+				posDest = numberPicker(g1);
 				g1.setShortestPaths(g1.getVertexSet()[posDest]);
-				g1.showPaths(posVertice, posDest, gv);
+				g1.showPaths(g1.getVertexSet()[posVertice], g1.getVertexSet()[posDest], gv);
 			}
-			break;
+			//break;
 			break;
 		case 'q':
 			g.saveGraph();

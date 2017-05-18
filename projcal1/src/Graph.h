@@ -38,23 +38,7 @@ float lat2coord(float x){
 }
 
 unsigned int levenshtein_distance(const std::string& pattern, const std::string& text){
-	/*const std::size_t len1 = s1.size(), len2 = s2.size();
 
-	std::vector<unsigned int> col(len2+1), prevCol(len2+1);
-
-	for(unsigned int i { 0 }; i < prevCol.size(); i++){
-		prevCol[i] = i;
-	}
-
-	for(unsigned int i { 0 }; i < len1; i++){
-		col[0] = i+1;
-		for(unsigned int j { 0 }; j < len2; j++){
-			col[j+1] = std::min({prevCol[1+j] + 1, col[j] + 1, prevCol[j] + (s1[i] == s2[j] ? 0:1)});
-		}
-		col.swap(prevCol);
-	}
-
-	return prevCol.size();*/
 	int n=text.length();
 	std::vector<int> d(n+1);
 	int old { },neww { };
@@ -80,6 +64,20 @@ unsigned int levenshtein_distance(const std::string& pattern, const std::string&
 
 template <class T> class Edge;
 template <class T> class Graph;
+
+template <class T>
+std::vector<Edge<T> *> vecIntersection(std::vector<Edge<T> *>a, std::vector<Edge<T> *> b){
+	std::vector<Edge<T> *> result { };
+	for(unsigned int i = 0; i < a.size(); i++){
+		Edge<T> *aux {a[i]};
+		for(unsigned int j = 0; j < b.size(); j++){
+			if(aux->getId() == b[j]->getId()){
+				result.push_back(aux); break;
+			}
+		}
+	}
+	return result;
+}
 
 template <class T>
 class Vertex {
@@ -176,7 +174,7 @@ class Graph {
 	Trie<T> ruas;
 public:
 	std::vector<Vertex<T> * > getVertexSet() const;
-	std::vector<Edge<T> * > getEdgeSet() const;
+	std::vector<Edge<T>> getEdgeSet() const;
 	int getNumVertex() const;
 	bool addEdge(const T &sourc, const T &dest, double w, bool c, unsigned int i, std::string n);
 	bool addEdge(const T &sourc, const T &dest, double w, bool c, std::string n);
@@ -193,10 +191,11 @@ public:
 	void closeRoad(GraphViewer *gv);
 	void openRoad(GraphViewer *gv);
 	void deleteVertex(GraphViewer *gv);
-	void showPaths(int posVertice, int posDest, GraphViewer *gv);
+	void showPaths(Vertex<Address> * posVertice, Vertex<Address> * posDest, GraphViewer *gv);
 	void setShortestPaths(Vertex<T> * vert1);
-	int searchExactRoadDest(std::string road);
+	Vertex<T> * searchExactRoadDest(std::string road);
 	int searchAproxRoadDest(std::string road);
+	void insertWord(std::string road, Edge<T> * in);
 	Graph<T> clone();
 };
 
@@ -578,18 +577,18 @@ struct vertex_greater_than {
 };
 
 template<class T>
-void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
-	Vertex<Address> * vert = vertexSet[posDest];
-	std::cout << "Caminho mais curto ate " << vert->getInfo() << " dist("
+void Graph<T>::showPaths(Vertex<Address> * posVertice, Vertex<Address> * posDest, GraphViewer *gv) {
+	Vertex<Address> * vert = posVertice;
+	std::cout << "Caminho mais curto desde " << vert->getInfo() << " dist("
 			<< vert->getInfo().getMinDist() << ")";
-	while (vert != vertexSet.at(posVertice)) {
+	while (vert != posDest) {
 		Vertex<Address> * aux = vert->getPrevious();
 		if(!aux){
 			std::cout << "No Path Found!" << std::endl;
 			return ;
 		}
 		//std::cout << "vert name: " << vert->getInfo() << std::endl;
-		std::cout << " <-- " << vert->getPrevious()->getInfo() << " dist("
+		std::cout << " --> " << vert->getPrevious()->getInfo() << " dist("
 				<< vert->getPrevious()->getInfo().getMinDist() << ")";
 
 		for(unsigned int i=0; i < aux->getAdj().size(); i++){
@@ -620,20 +619,30 @@ void Graph<T>::showPaths(int posVertice, int posDest, GraphViewer *gv) {
 }
 
 template<class T>
-int Graph<T>::searchExactRoadDest(std::string road) {
+Vertex<T> * Graph<T>::searchExactRoadDest(std::string road) {
 
 
 	std::vector<Edge<T> *> edges { };
 
-	for(unsigned int i { 0 }; i < edges.size();i++){
-		if(edgeSet[i].getName() == road && !(edgeSet[i].getClosed())){
-			for(unsigned int j { 0 }; j < vertexSet.size(); j++){
-				if(vertexSet[j] == edgeSet[i].getDest()) return j;
-			}
-		}
+	//edges = ruas.search(road);
+
+	char input[100] { };
+	std::strcpy(input,road.c_str());
+	char *token = std::strtok(input, " ");
+	edges = ruas.search(std::string(token));
+	while (token != NULL) {
+		edges = vecIntersection(edges,ruas.search(std::string(token)));
+		//ruas.insertWord(std::string(token),l1);
+		token = std::strtok(NULL, " ");
 	}
-	std::cout << "No matching/open street found!\n" << std::endl;
-	return -1;
+
+	if(edges.size() != 0){
+		std::cout << edges[0]->getDest()->getInfo().getNome() << std::endl;
+		return edges[0]->getDest();
+	}
+
+	else std::cout << "No matching/open street found!\n" << std::endl;
+	return 0;
 }
 
 template<class T>
@@ -687,6 +696,16 @@ int Graph<T>::searchAproxRoadDest(std::string road) {
 	return -1;
 }
 
+template<class T>
+inline std::vector<Edge<T> > Graph<T>::getEdgeSet() const {
+	return edgeSet;
+}
+
+template<class T>
+inline void Graph<T>::insertWord(std::string road, Edge<T>* in) {
+	ruas.insertWord(road, in);
+}
+
 template <class T>
 Graph<T> Graph<T>::clone()
 {
@@ -697,8 +716,10 @@ Graph<T> Graph<T>::clone()
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)
 	{
 		std::vector<Edge<T> > edges = this->vertexSet[i]->getAdj();
-		for (unsigned int a = 0; a < edges.size(); a++)
-			ret.addEdge(this->vertexSet[i]->getInfo(), edges[a].getDest()->getInfo(), edges[a].getWeight(), edges[a].getClosed(), edges[a].getName());
+		for (unsigned int a = 0; a < edges.size(); a++){
+			ret.addEdge(this->vertexSet[i]->getInfo(), edges[a].getDest()->getInfo(), edges[a].getWeight(), edges[a].getClosed(), edges[a].getId(), edges[a].getName());
+			//ret.insertWord(edges[a].getName(), new Edge{edges[a]});
+		}
 	}
 
 	return ret;
@@ -858,6 +879,8 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, bool c, unsigned
 	unsigned int aux { vS->getAdj().size()};
 
 	edgeSet.push_back(vS->getAdj().at(aux-1));
+
+	insertWord(n, new Edge<T> { vS->getAdj().at(aux - 1) });
 
 	return true;
 }
