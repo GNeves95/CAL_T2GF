@@ -1,0 +1,21 @@
+ _______________________
+|2017/4/19 18:9	|
+|_______________________|
+(18:9:13) Reading files: 73 ms
+(18:10:54) Cloning graph: 0 ms
+(18:10:54) Exact street search: 0 ms
+(18:10:57) Calculate Dijkstra: 0 ms
+(18:10:57) Showing Path: 1 ms
+(18:11:49) Cloning graph: 0 ms
+(18:11:49) Approximate street search: 0 ms
+(18:12:5) Calculate Dijkstra: 0 ms
+(18:12:5) Showing Path: 0 ms
+(18:12:27) Cloning graph: 0 ms
+(18:12:42) Calculate Dijkstra: 0 ms
+(18:12:42) Showing Path: 4 ms
+(18:12:55) Writting to files: 4 ms
+ _______________________
+|2017/4/19 18:31	|
+|_______________________|
+(18:31:36) Reading files: 131 ms
+(18:31:46) Writting to files: 431 ms

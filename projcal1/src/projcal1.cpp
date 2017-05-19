@@ -11,6 +11,7 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <ctime>
 #include "Address.h"
 #include "Graph.h"
 #include "graphviewer.h"
@@ -37,8 +38,17 @@ int main() {
 	Graph<Address> g { };
 	Graph<Address> g1 { };
 	//Graph<Address> g2 { };
+	//clock_t begin { }, end { };
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
 
-	vector<Edge<Address> *> primresult { };
+
+
+	times << " _______________________" << endl;
+	times << "|" << 1900 + t->tm_year << "/" << t->tm_mon << "/" << t->tm_mday << " " << t->tm_hour << ":" << t->tm_min << "\t|" <<endl;
+	times << "|_______________________|" << endl;
+
+	//vector<Edge<Address> *> primresult { };
 	bool running { true };
 	int posVertice { }, posDest { };
 	Vertex<Address> * posVerSearch { };
@@ -144,9 +154,15 @@ int main() {
 		default:
 			break;
 		}
+
+		//cerr << times.str();
 	} while(running);
 
+	std::ofstream outfile { };
 
+	outfile.open("records.log", std::ios_base::app);
+	outfile << times.str();
+	outfile.close();
 
 	gv->closeWindow();
 	return 0;

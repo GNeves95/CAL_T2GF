@@ -15,6 +15,8 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
+#include <sstream>
+#include <ctime>
 #include "graphviewer.h"
 #include "Address.h"
 #include "MinHeap.h"
@@ -28,6 +30,8 @@ constexpr float minLatitude = 36.8;
 
 constexpr float maxLongitude = -6.1;
 constexpr float minLongitude = -10.3;
+
+std::stringstream times { };
 
 float lon2coord(float x){
 	return (x-minLongitude)/(maxLongitude-minLongitude);
@@ -213,6 +217,13 @@ std::vector<Vertex<T> * > Graph<T>::getVertexSet() const {
 template<class T>
 void Graph<T>::saveGraph(){
 
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
+
 	for (unsigned int i = 0; i < vertexSet.size(); i++){
 		vertexSet[i]->setVisited(false);
 	}
@@ -247,13 +258,23 @@ void Graph<T>::saveGraph(){
 		file2.close();
 	}
 
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Writting to files: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
 }
 
 template<class T>
 void Graph<T>::setShortestPaths(Vertex<T> * vert1) {
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
 
 	//Vertex<T> * vert1 = vertexSet[posVertice];
 	dijkstra(vert1);
+
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Calculate Dijkstra: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
 }
 
 template<class T>
@@ -281,9 +302,22 @@ void Graph<T>::deleteEdge(GraphViewer *gv){
 		}
 		std::cout << "Choose Vertex Number: ";
 		std::cin >> b;
+
+		time_t timev { time(0) };
+		tm * t { localtime( &timev)};
+
+		clock_t begin { };
+
+		begin = std::clock();
+
 		if (b >= 0 && b < vertexSet[a]->getAdj().size()){
 			gv->removeEdge(vertexSet[a]->getAdj()[b].getId());
 			vertexSet[a]->removeAdj(b);
+
+			ruas.removeWord(vertexSet[a]->getAdj()[b].getName(), vertexSet[a]->getAdj()[b]);
+
+			times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Deleting edge: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
 			return ;
 		}
 	}
@@ -314,10 +348,21 @@ void Graph<T>::closeRoad(GraphViewer *gv){
 		}
 		std::cout << "Choose Vertex Number: ";
 		std::cin >> b;
+
+		time_t timev { time(0) };
+		tm * t { localtime( &timev)};
+
+		clock_t begin { };
+
+		begin = std::clock();
+
 		if (b >= 0 && b < vertexSet[a]->getAdj().size()){
 			vertexSet[a]->getAdj()[b].closeRoad(gv);
 
 			//vertexSet[a]->removeAdj(b);
+
+			times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Closing road: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
 			return ;
 		}
 	}
@@ -348,10 +393,21 @@ void Graph<T>::openRoad(GraphViewer *gv){
 		}
 		std::cout << "Choose Vertex Number: ";
 		std::cin >> b;
+
+		time_t timev { time(0) };
+		tm * t { localtime( &timev)};
+
+		clock_t begin { };
+
+		begin = std::clock();
+
 		if (b >= 0 && b < vertexSet[a]->getAdj().size()){
 			vertexSet[a]->getAdj()[b].openRoad(gv);
 
 			//vertexSet[a]->removeAdj(b);
+
+			times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Opening road: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
 			return ;
 		}
 	}
@@ -404,11 +460,22 @@ void Graph<T>::createEdge(GraphViewer *gv){
 	std::cout << "Please name the link: ";
 	std::cin >> name;
 
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
+
 	Vertex<T> *n1 = new Vertex<T> { vertexSet[b]->getInfo() };
 	Edge<T> *l1 = new Edge<T> { n1, weight, name };
 	gv->addEdge(l1->getId(),vertexSet[a]->getInfo().getId(), vertexSet[b]->getInfo().getId(),EdgeType::DIRECTED);
 	gv->setEdgeLabel(l1->getId(),name);
 	vertexSet[a]->setAdj(*l1);
+
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Creating edge: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
+	begin = std::clock();
 
 	char input[100] { };
 	std::strcpy(input,name.c_str());
@@ -417,6 +484,8 @@ void Graph<T>::createEdge(GraphViewer *gv){
 		ruas.insertWord(std::string(token),l1);
 		token = std::strtok(NULL, " ");
 	}
+
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Inserting street to trie: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
 }
 
 template<class T>
@@ -434,8 +503,19 @@ void Graph<T>::createVertex(GraphViewer *gv){
 	std::cout << "Vertex Latitude: ";
 	std::cin >> la;
 	//la = 41.178;
+
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
+
 	Address a1(lo, la, info);
 	this->addVertex(a1);
+
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Creating vertex: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
 	gv->addNode(a1.getId(),lon2coord(lo)*width,lat2coord(la)*height);
 	gv->setVertexLabel(a1.getId(), info);
 	gv->setVertexColor(a1.getId(),CYAN);
@@ -467,6 +547,12 @@ Vertex<T> * Graph<T>::findVertex(std::string name) {
 
 template<class T>
 void Graph<T>::createGraph(GraphViewer *gv){
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
 
 	std::ifstream file { };
 
@@ -567,6 +653,9 @@ void Graph<T>::createGraph(GraphViewer *gv){
 
 		file.close();
 	}
+
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Reading files: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+	//std::cerr << times.str();
 }
 
 template <class T>
@@ -578,6 +667,14 @@ struct vertex_greater_than {
 
 template<class T>
 void Graph<T>::showPaths(Vertex<Address> * posVertice, Vertex<Address> * posDest, GraphViewer *gv) {
+
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
+
 	Vertex<Address> * vert = posVertice;
 	std::cout << "Caminho mais curto desde " << vert->getInfo() << " dist("
 			<< vert->getInfo().getMinDist() << ")";
@@ -585,6 +682,7 @@ void Graph<T>::showPaths(Vertex<Address> * posVertice, Vertex<Address> * posDest
 		Vertex<Address> * aux = vert->getPrevious();
 		if(!aux){
 			std::cout << "No Path Found!" << std::endl;
+			times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Failed Showing path: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
 			return ;
 		}
 		//std::cout << "vert name: " << vert->getInfo() << std::endl;
@@ -616,15 +714,21 @@ void Graph<T>::showPaths(Vertex<Address> * posVertice, Vertex<Address> * posDest
 	}
 	std::cout << std::endl;
 
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Showing Path: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
 }
 
 template<class T>
 Vertex<T> * Graph<T>::searchExactRoadDest(std::string road) {
 
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
 
 	std::vector<Edge<T> *> edges { };
-
-	//edges = ruas.search(road);
 
 	char input[100] { };
 	std::strcpy(input,road.c_str());
@@ -632,48 +736,51 @@ Vertex<T> * Graph<T>::searchExactRoadDest(std::string road) {
 	edges = ruas.search(std::string(token));
 	while (token != NULL) {
 		edges = vecIntersection(edges,ruas.search(std::string(token)));
-		//ruas.insertWord(std::string(token),l1);
 		token = std::strtok(NULL, " ");
 	}
 
-	if(edges.size() != 0){
-		std::cout << edges[0]->getDest()->getInfo().getNome() << std::endl;
-		return edges[0]->getDest();
+	for(unsigned int i { }; i < edges.size(); i++){
+		if(edges[i]->getName() == road){
+			std::cout << edges[i]->getDest()->getInfo().getNome() << std::endl;
+			times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Exact street search: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+			return edges[i]->getDest();
+		}
 	}
 
-	else std::cout << "No matching/open street found!\n" << std::endl;
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Failed exact search: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+
+	std::cout << "No matching/open street found!\n" << std::endl;
 	return 0;
 }
 
 template<class T>
 int Graph<T>::searchAproxRoadDest(std::string road) {
-	std::cout << "entered searchAproxRoadDest!\n";
+
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
+
 	if(edgeSet.size() > 0){
-		std::cout << "edgeSet not empty!\n";
 		std::vector<unsigned int> pos { };
 		for(unsigned int i { 0 }; i < edgeSet.size();i++){
-			std::cout << i << " strings compared, where i is smaller than size: " << edgeSet.size() << "!\n\n";
 			bool inserted { false};
-			/*for(unsigned int j { 0 }; j < pos.size() || j < 100;j++){
-				std::cout << "comparing with previous strings, iteration " << j << "!\n";
 
-				std::cout << levenshtein_distance(road, edgeSet[i].getName()) << " vs " << levenshtein_distance(road, edgeSet[pos[j]].getName());
-
-				if(levenshtein_distance(road, edgeSet[i].getName()) > levenshtein_distance(road, edgeSet[pos[j]].getName())){
-					pos.insert(pos.begin()+j,i);
-					inserted = true;
+			//std::cout << "before nested cycle!\n" << pos.size() << std::endl;
+			for(unsigned int j { 0 }; j < pos.size(); j++){
+				//std::cout << levenshtein_distance(road, edgeSet[i].getName()) << " vs " << levenshtein_distance(road, edgeSet[pos[j]].getName()) << std::endl;
+				if(levenshtein_distance(road, edgeSet[i].getName()) < levenshtein_distance(road, edgeSet[pos[j]].getName())){
+					pos.insert(pos.begin() + j, i);
 					break;
 				}
-			}*/
-			std::cout << levenshtein_distance("A1", "a") << std::endl;
-			std::cout << levenshtein_distance("A1", "A18") << std::endl;
-			std::cout << levenshtein_distance("A1", "ola A1") << std::endl;
-			std::cout << levenshtein_distance("A1", "1A") << std::endl;
-			std::cout << levenshtein_distance("A1", "A") << std::endl;
-			std::cout << levenshtein_distance("A1", "A1") << std::endl;
+			}
+
 			if(!inserted) pos.push_back(i);
 		}
-		std::cout << "compared every string!\n";
+		//std::cout << "compared every string!\n";
+		times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Approximate street search: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
 		int choice { };
 		if(pos.size()>0){
 			std::cout << "Did you mean: " << std::endl;
@@ -709,6 +816,14 @@ inline void Graph<T>::insertWord(std::string road, Edge<T>* in) {
 template <class T>
 Graph<T> Graph<T>::clone()
 {
+
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
+
 	Graph<T> ret { };
 	for (unsigned int i = 0; i < this->vertexSet.size(); i++)
 		ret.addVertex(this->vertexSet[i]->getInfo());
@@ -721,6 +836,8 @@ Graph<T> Graph<T>::clone()
 			//ret.insertWord(edges[a].getName(), new Edge{edges[a]});
 		}
 	}
+
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Cloning graph: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
 
 	return ret;
 }
@@ -738,7 +855,26 @@ void Graph<T>::deleteVertex(GraphViewer *gv) {
 			break;
 	}
 
+	gv->removeNode(vertexSet[a]->getInfo().getId());
+
+	time_t timev { time(0) };
+	tm * t { localtime( &timev)};
+
+	clock_t begin { };
+
+	begin = std::clock();
+
 	//gv->removeEdge();
+
+	for(unsigned int i { 0 }; i < vertexSet[a]->getAdj().size(); i++){
+		char input[100] { };
+		std::strcpy(input,vertexSet[a]->getAdj()[i].getName().c_str());
+		char *token = std::strtok(input, " ");
+		while (token != NULL) {
+			ruas.removeWord(std::string(token),vertexSet[a]->getAdj()[i]);
+			token = std::strtok(NULL, " ");
+		}
+	}
 
 	vertexSet[a]->clearAdj();
 
@@ -747,12 +883,21 @@ void Graph<T>::deleteVertex(GraphViewer *gv) {
 			for (unsigned int j = 0; j < vertexSet[i]->getAdj().size(); j++){
 				if (vertexSet[a]->getInfo() == vertexSet[i]->getAdj()[j].getDest()->getInfo()){
 					vertexSet[i]->removeOneAdj(vertexSet[a]);
+					char input[100] { };
+					std::strcpy(input,vertexSet[i]->getAdj()[j].getName().c_str());
+					char *token = std::strtok(input, " ");
+					while (token != NULL) {
+						ruas.removeWord(std::string(token),vertexSet[i]->getAdj()[j]);
+						token = std::strtok(NULL, " ");
+					}
 				}
 			}
 		}
 	}
 	vertexSet.erase(vertexSet.begin() + a);
 	//return true;
+
+	times << "(" << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec << ") Deleting vertex: " << (std::clock() - begin) / (double) (CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
 }
 
 template <class T>

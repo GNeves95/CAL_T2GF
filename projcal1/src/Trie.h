@@ -31,6 +31,7 @@ public:
 	Node<T> *getFilho(char ch);
 	Node<T> *addFilho(char ch, bool f);
 	void addEdge(Edge<T> * edge);
+	void removeEdge(Edge<T> edge);
 	std::vector<Edge<T> *> getEdges();
 };
 
@@ -41,6 +42,7 @@ private:
 public:
 	Trie();
 	void insertWord(std::string word, Edge<T> *edge);
+	void removeWord(std::string word, Edge<T> edge);
 	std::vector<Edge<T> *> search(std::string word);
 
 };
@@ -86,6 +88,17 @@ inline void Node<T>::addEdge(Edge<T>* edge) {
 }
 
 template<class T>
+inline void Node<T>::removeEdge(Edge<T> edge) {
+	for(unsigned int i { 0 }; i < EdgeSet.size(); i++){
+		if(edge.getId() == EdgeSet[i]->getId()){
+			EdgeSet.erase(EdgeSet.begin() + i);
+			if(EdgeSet.size() == 0) fim = false;
+			break;
+		}
+	}
+}
+
+template<class T>
 inline std::vector<Edge<T> *> Node<T>::getEdges() {
 	return this->EdgeSet;
 }
@@ -106,6 +119,18 @@ void Trie<T>::insertWord(std::string word, Edge<T> *edge){
 	}
 	aux = aux->addFilho(word[word.length()-1], true);
 	aux->addEdge(edge);
+}
+
+template<class T>
+inline void Trie<T>::removeWord(std::string word, Edge<T> edge) {
+	Node<T> *aux = root;
+
+	for(unsigned int i = 0; i < word.length(); i++){
+		aux = aux->getFilho(word[i]);
+		if(aux == 0) return ;
+	}
+
+	aux->removeEdge(edge);
 }
 
 template <class T>
