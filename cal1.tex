@@ -1,0 +1,297 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\pagenumbering{arabic}
+
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{framed}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[export]{adjustbox}
+\usepackage{listings}
+\usepackage{amssymb}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{CAL}
+
+\rfoot{Page \thepage}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+\title{CAL 01}
+\author{ee10201 }
+\date{April 2017}
+
+\begin{document}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{22cm}
+
+\title{\Huge\textbf{Evacuation System}\linebreak\linebreak
+\Large\textbf{Theme 3}\linebreak
+\includegraphics[scale=0.9]{cal/FEUP.jpg} \linebreak\linebreak
+\linebreak
+\Large{Mestrado Integrado em Engenharia Informática e Computação} \linebreak\linebreak
+\Large{Concepção e Analise de Algoritmos}\linebreak
+}
+
+\author{\textbf{Class 2MIEIC02}\\ Group F:
+\\ Luís Guilherme da Costa Castro Neves - 201306485 
+\\ João Carlos Fonseca Pina de Lemos - 201000660
+\linebreak\linebreak \\
+ \\ Faculdade de Engenharia da Universidade do Porto \\ Rua Roberto Frias, s\/n, 4200-465 Porto, Portugal \linebreak\linebreak\linebreak
+\linebreak\linebreak\vspace{1cm}}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+\tableofcontents
+\lhead{Table of Contents}
+\newpage
+\lhead{Evacuation Systems}
+\section{Evacuation Systems}
+What is one of the most unnerving yet most common problem of present days? If your gess was traffic them you are reading the correct article. During the course of Algorithms and Data Structures we were asked to develop a program that could help drivers to find alternative travel paths in case of highway roadblock.
+
+This project will help both users in the area of the accident, allowing for safe evacuation and users whose travel path and travel duration might be affected by the traffic caused by the accident.
+
+Map information can be uploaded to the project using maps extracted from OpenStreetMaps (www.openstreetmap.org), lacating, in the map, adresses and interest points.
+\newpage
+\section{OpenStreetMaps}
+\lhead{OpenStreetMaps}
+OpenStreetMap powers map data on thousands of web sites, mobile apps, and hardware devices.
+OpenStreetMap is built by a community of mappers that contribute and maintain data about roads, trails, cafés, railway stations, and much more, all over the world.
+It emphasizes local knowledge. Contributors use aerial imagery, GPS devices, and low-tech field maps to verify that OSM is accurate and up to date.
+OpenStreetMap's community is diverse, passionate, and growing every day. Contributors include enthusiast mappers, GIS professionals, engineers running the OSM servers, humanitarians mapping disaster-affected areas, and many more. 
+OpenStreetMap is open data: everyone is free to use it for any purpose as long as OpenStreetMap and its contributors are credited.
+\includegraphics[scale=0.65, center]{cal/feupmap2.JPG} 
+
+Maps can them be exported by pressing the Export button on top of the website. This downloads an OSM XML file that can them be converted into 3 TXT files by te use of the OSM2TXT program. The first file contais information about the nodes , the secound file contains information about the roads ( and lastly the third file is compesed of the information about the connections between the nodes.
+
+
+\newpage
+\section{Dijkstra's algorithm}
+\lhead{Dijkstra's algorithm}
+Djikstra's algorithm (named after its discover, E.W. Dijkstra) solves the problem of finding the shortest path from a point in a graph (the source) to a destination. It turns out that one can find the shortest paths from a given source to all points in a graph in the same time, hence this problem is sometimes called the single-source shortest paths problem.
+
+\includegraphics[scale=0.5]{cal/dij.png} 
+
+The execution of Dijkstra's algorithm. The source s is the leftover vertex. The shortest-path estimates appear withinthe vertices, and shaded edges indicate predecessor values. Black vertices are in the set S, and white vertices are in the min-priority queue Q = V - S.
+
+\subsection{PseudoCode}
+
+In the following algorithm, the code u <- vertex in Q with min dist[u], searches for the vertex u in the vertex set Q that has the least dist[u] value. length(u, v) returns the length of the edge joining (i.e. the distance between) the two neighbor-nodes u and v. The variable alt on line 17 is the length of the path from the root node to the neighbor node v if it were to go through u. If this path is shorter than the current shortest path recorded for v, that current path is replaced with this alt path. The prev array is populated with a pointer to the "next-hop" node on the source graph to get the shortest route to the source.
+
+a)The situation just before the first iteration of the while loop. The shaded vertex has the minimum d value and is chosen as vertex u.
+
+(b)-(f)The situation aftereach successive iteration of the while loop. The shared vertex in each part is chosen as vertex u. 
+
+The d values and predecessors shown in part (f) are the final values.
+\begin{framed}
+    \lstinputlisting[tabsize=1,basicstyle=\small]{cal/pseudocode.txt}
+    
+\end{framed}
+
+If we are only interested in a shortest path between vertices source and target, we can terminate the search after line 13 if u = target. Now we can read the shortest path from source to target by reverse iteration:
+\begin{framed}
+        \lstinputlisting[tabsize=1,basicstyle=\small]{cal/code.txt}
+
+\end{framed}
+
+Now sequence S is the list of vertices constituting one of the shortest paths from source to target, or the empty sequence if no path exists.
+
+A more general problem would be to find all the shortest paths between source and target (there might be several different ones of the same length). Then instead of storing only a single node in each entry of prev[] we would store all nodes satisfying the relaxation condition. For example, if both r and source connect to target and both of them lie on different shortest paths through target (because the edge cost is the same in both cases), then we would add both r and source to prev[target]. When the algorithm completes, prev[] data structure will actually describe a graph that is a subset of the original graph with some edges removed. Its key property will be that if the algorithm was run with some starting node, then every path from that node to any other node in the new graph will be the shortest path between those nodes in the original graph, and all paths of that length from the original graph will be present in the new graph. Then to actually find all these shortest paths between two given nodes we would use a path finding algorithm on the new graph, such as depth-first search.
+
+\subsection{Step by Step operation of Dijkstra algorithm.}
+Step1. Given initial graph G=(V, E). All nodes nodes have infinite cost except the source node, s,  which has 0 cost.
+
+\includegraphics[scale=1,center]{cal/dij1.png} 
+
+Step 2. First we choose the node, which is closest to the source node, s. We initialize d[s] to 0. Add it to S. Relax all nodes adjacent to source, s. Update predecessor (see red arrow in diagram below) for all nodes updated.
+
+\includegraphics[scale=1,center]{cal/dij2.png}
+
+Step 3. Choose the closest node, x. Relax all nodes adjacent to node x. Update predecessors for nodes u, v and y (again notice red arrows in diagram below).
+
+\includegraphics[scale=1,center]{cal/dij3.png} 
+
+Step 4. Now, node y is the closest node, so add it to S. Relax node v and adjust its predecessor (red arrows remember!).
+
+\includegraphics[scale=1,center]{cal/dij4.png}
+
+Step 5. Now we have node u that is closest. Choose this node and adjust its neighbor node v.
+
+\includegraphics[scale=1,center]{cal/dij5.png}  
+
+Step 6. Finally, add node v. The predecessor list now defines the shortest path from each node to the source node, s.
+
+\includegraphics[scale=1,center]{cal/dij6.png} 
+\newpage
+\subsection{Priority Queue}
+\lhead{Priority Queue}
+
+A min-priority queue is an abstract data type that provides 3 basic operations : add\_with\_priority(), decrease\_priority() and extract\_min(). As mentioned earlier, using such a data structure can lead to faster computing times than using a basic queue. Notably, Fibonacci heap (Fredman \& Tarjan 1984) or Brodal queue offer optimal implementations for those 3 operations. As the algorithm is slightly different, we mention it here, in pseudo-code as well :
+\begin{framed}
+function Dijkstra(Graph, source):\\
+\tab dist[source] <- 0 				// Initialization\\
+	\tab create vertex set Q\\
+	\tab for each vertex v in Graph: \\          
+		\tab\tab if v != source\\
+			\tab\tab dist[v] <- INFINITY     	// Unknown distance from source to v\\
+			\tab\tab\tab prev[v] <- UNDEFINED    	// Predecessor of v\\
+		\tab\tab Q.add\_with\_priority(v, dist[v])\\
+\\
+	\tab while Q is not empty:    	  	// The main loop\\
+		\tab\tab u <- Q.extract\_min()         // Remove and return best vertex\\
+		\tab\tab for each neighbor v of u:   // only v that is still in Q\\
+			\tab\tab\tab alt <- dist[u] + length(u, v) \\
+			\tab\tab if alt < dist[v]\\
+				\tab\tab dist[v] <- alt\\
+				\tab\tab prev[v] <- u\\
+				\tab\tab Q.decrease\_priority(v, alt)\\
+	\tab return dist[], prev[]\\
+%    \lstinputlisting[tabsize=1,basicstyle=\small]{cal/priorityqueue.h}
+\end{framed}
+
+
+
+Instead of filling the priority queue with all nodes in the initialization phase, it is also possible to initialize it to contain only source; then, inside the if alt < dist.at(v) block, the node must be inserted if not already in the queue (instead of performing a decrease\_priority operation).
+
+Other data structures can be used to achieve even faster computing times in practice.
+
+\subsection{Implementation}
+\lhead{Implementation}
+Our implementation of dijkstra's algorithm with priority queue goes as followed:
+
+MinHeap.h
+\begin{framed}
+\lstinputlisting[tabsize=2,basicstyle=\small]{cal/MinHeap.h}
+\end{framed}
+
+
+Graph.h
+\begin{framed}
+\lstinputlisting[tabsize=1,basicstyle=\small]{cal/Graph.h}
+\end{framed}
+\newpage
+
+\section{Address}
+The use of the information taken from the map is stored in Address.
+\lhead{Address}
+\subsection{Address.h}
+\begin{framed}
+\lstinputlisting[tabsize=1,basicstyle=\small]{cal/Address.h}
+\end{framed}
+
+\subsection{Functions}
+\begin{framed}
+\lstinputlisting[tabsize=1,basicstyle=\small]{cal/Address.cpp}
+\end{framed}
+
+\newpage
+\section{Levenshtein distance}
+\lhead{Levenshtein distance}
+In information theory and computer science, the Levenshtein distance is a string metric for measuring the difference between two sequences. Informally, the Levenshtein distance between two words is the minimum number of single-character edits (insertions, deletions or substitutions) required to change one word into the other.
+
+Levenshtein distance (LD) is a measure of the similarity between two strings, which we will refer to as the source string (s) and the target string (t). The distance is the number of deletions, insertions, or substitutions required to transform s into t. For example, If s is "test" and t is "test", then LD(s,t) = 0, because no transformations are needed. The strings are already identical. If s is "test" and t is "tent", then LD(s,t) = 1, because one substitution (change "s" to "n") is sufficient to transform s into t.
+The greater the Levenshtein distance, the more different the strings are.
+Levenshtein distance is named after the Russian scientist Vladimir Levenshtein, who devised the algorithm in 1965. If you can't spell or pronounce Levenshtein, the metric is also sometimes called edit distance.
+
+The Levenshtein distance algorithm has been used in:
+
+Spell checking
+
+Speech recognition
+
+DNA analysis
+
+Plagiarism detection
+
+\begin{framed}
+\lstinputlisting[tabsize=1,basicstyle=\small]{cal/doc3.txt}
+\end{framed}
+\newpage
+\section{Trie}
+\lhead{Trie}
+You may read about how wonderful the tries are, but maybe you don’t know yet what the tries are and why the tries have this name. The word trie is an infix of the word “retrieval” because the trie can find a single word in a dictionary with only a prefix of the word. The main idea of the trie data structure consists of the following parts:
+
+The trie is a tree where each vertex represents a single word or a prefix.
+The root represents an empty string (“”), the vertexes that are direct sons of the root represent prefixes of length 1, the vertexes that are 2 edges of distance from the root represent prefixes of length 2, the vertexes that are 3 edges of distance from the root represent prefixes of length 3 and so on. In other words, a vertex that are k edges of distance of the root have an associated prefix of length k.
+Let v and w be two vertexes of the trie, and assume that v is a direct father of w, then v must have an associated prefix of w.
+The next figure shows a trie with the words “tree”, “trie”, “algo”, “assoc”, “all”, and “also.”
+\includegraphics[scale=0.7]{cal/trie.png}
+
+Note that every vertex of the tree does not store entire prefixes or entire words. The idea is that the program should remember the word that represents each vertex while lower in the tree.
+
+\begin{framed}
+\lstinputlisting[tabsize=1,basicstyle=\small]{cal/trie.txt}
+
+\end{framed}
+\newpage
+\lhead{References}
+\begin{thebibliography}{9}
+\bibitem{iten1}
+  Dijkstra, E. W.,
+  \emph{A note on two problems in connexion with graphs},
+  Numerische Mathematik,
+  1959.
+  
+  \bibitem{lamport94}
+  Leslie Lamport,
+  \emph{\LaTeX: a document preparation system},
+  Addison Wesley, Massachusetts,
+  2nd edition,
+  1994.
+  
+  \bibitem{data}
+  M A Weiss,
+  \emph{Data Structures and Algorithm Analysis in C++},
+  Addison Wesley,
+  3/E. New York, NY,
+  2007.
+  
+\bibitem{dynamic}
+ Sniedovich, M.,
+ \emph{Dynamic Programming: Foundations and Principles},
+ Francis \& Taylor,
+ 2010.
+
+\bibitem{openstreetmap}
+OpenStreetMap contributors,
+\emph{About},
+https://www.openstreetmap.org/about.
+  
+\bibitem{pseudocode}
+  Chen, M.; Chowdhury, R. A.; Ramachandran, V.; Roche, D. L.; Tong, L.,
+  \emph{Priority Queues and Dijkstra’s Algorithm},
+   UTCS Technical Report TR-07-54 — 12 October 2007,
+    Austin, Texas: The University of Texas at Austin, Department of Computer Sciences,
+    2007.
+    
+  \bibitem{xavier}
+  Bellekens, Xavier,
+  \emph{A Highly-Efficient Memory-Compression Scheme for GPU-Accelerated Intrusion Detection Systems},
+  Glasgow, Scotland, UK
+  2014. 
+  
+\bibitem{tries}
+Allison, Lloyd
+\emph{Tries}
+Retrieved 18 February 
+2014.
+
+\bibitem{xdr}
+Navarro, Gonzalo 
+\emph{A guided tour to approximate string matching} 
+2001. 
+
+\bibitem{ds}
+ Hirschberg, D. S. 
+ \emph{A linear space algorithm for computing maximal common subsequences}
+ Communications of the ACM. 
+ 1975.
+ 
+\end{thebibliography}
+\end{document}
